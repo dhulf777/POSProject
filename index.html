@@ -182,6 +182,27 @@
       text-align: center;
     }
 
+    .order-preview {
+      padding: 14px;
+      background: #eef8ee;
+      border: 2px solid var(--success-color);
+      border-radius: 8px;
+      color: #245b35;
+      font-size: 1.1rem;
+      line-height: 1.5;
+    }
+
+    .order-preview strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 1.2rem;
+    }
+
+    .btn-clear {
+      background: #e0e0e0;
+      color: #333;
+    }
+
     .btn {
       min-height: 52px;
       padding: 15px 25px;
@@ -525,7 +546,7 @@
         </div>
         <div class="hours-calculator">
           <h3>Hours Worked</h3>
-          <p class="local-note">Clock in and clock out to fill these times automatically.</p>
+          <p class="local-note">Clock in. Clock out. Your total time appears here.</p>
           <div class="time-inputs">
             <div class="time-input-group">
               <label for="hoursStart">Start time</label>
@@ -548,7 +569,7 @@
       <div class="card">
         <h2>📝 How to Order</h2>
         <div class="local-info" role="note">
-          Choose a drink, choose caffeinated or decaf, choose syrup, then press Create Ticket.
+          1. Type the customer name. 2. Choose the drink. 3. Choose the coffee and syrup. 4. Check your order. 5. Create the ticket.
         </div>
       </div>
     </div>
@@ -561,7 +582,7 @@
         <!-- Button-based ticket builder -->
         <div class="quick-add">
           <label class="student-name-label" for="orderCustomerName">Customer name</label>
-          <input class="order-student-name" type="text" id="orderCustomerName" placeholder="Type the customer's name" autocomplete="name">
+          <input class="order-student-name" type="text" id="orderCustomerName" placeholder="Type the customer's name" autocomplete="name" oninput="updateOrderPreview()">
           <div class="option-group">
             <span class="option-label" id="drink-options-label">Drink</span>
             <button type="button" class="option-button selected" aria-pressed="true" data-group="drink" data-value="Latte" onclick="selectOrderOption(this)">Latte</button>
@@ -579,7 +600,12 @@
             <button type="button" class="option-button selected" aria-pressed="true" data-group="syrup" data-value="No extra syrup" onclick="selectOrderOption(this)">No Extra Syrup</button>
             <button type="button" class="option-button" aria-pressed="false" data-group="syrup" data-value="Extra syrup" onclick="selectOrderOption(this)">Extra Syrup</button>
           </div>
+          <div class="order-preview" id="orderPreview" role="status" aria-live="polite">
+            <strong>Check your order</strong>
+            Customer name needed. Latte, Caffeinated, No extra syrup.
+          </div>
           <button class="btn btn-add" onclick="createTicket()">Create Ticket</button>
+          <button class="btn btn-clear" type="button" onclick="resetOrder()">Clear Order</button>
         </div>
 
         <!-- Dynamic Tickets Container -->
@@ -792,6 +818,32 @@
         option.classList.toggle('selected', option === button);
         option.setAttribute('aria-pressed', option === button ? 'true' : 'false');
       });
+      updateOrderPreview();
+    }
+
+    function updateOrderPreview() {
+      const customerName = getOrderCustomerName();
+      const preview = document.getElementById('orderPreview');
+      preview.innerHTML = '<strong>Check your order</strong>';
+      preview.append(
+        `Customer: ${customerName || 'Name needed'} | ${selectedOrderOptions.drink} | ${selectedOrderOptions.coffee} | ${selectedOrderOptions.syrup}.`
+      );
+    }
+
+    function resetOrder() {
+      selectedOrderOptions.drink = 'Latte';
+      selectedOrderOptions.coffee = 'Caffeinated';
+      selectedOrderOptions.syrup = 'No extra syrup';
+      document.getElementById('orderCustomerName').value = '';
+
+      Object.entries(selectedOrderOptions).forEach(([group, value]) => {
+        document.querySelectorAll(`[data-group="${group}"]`).forEach(option => {
+          const selected = option.dataset.value === value;
+          option.classList.toggle('selected', selected);
+          option.setAttribute('aria-pressed', selected ? 'true' : 'false');
+        });
+      });
+      updateOrderPreview();
     }
 
     function createTicket() {
@@ -814,6 +866,7 @@
       orders.unshift(newOrder);
       saveLocalData(storageKeys.orders, orders);
       renderTickets();
+      resetOrder();
     }
 
     function advanceStage(orderId) {
@@ -911,6 +964,7 @@
     renderStudentStatuses();
     renderShiftLog();
     renderTickets();
+    updateOrderPreview();
   </script>
 </body>
 </html>
