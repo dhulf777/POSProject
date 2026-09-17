@@ -83,6 +83,10 @@
       border-top: 8px solid var(--accent-color);
     }
 
+    .pos-card {
+      border-top: 8px solid var(--success-color);
+    }
+
     .clock-container h2 {
       font-size: 1.7rem;
       border-bottom: 0;
@@ -138,6 +142,40 @@
       font-weight: bold;
       font-size: 1.1rem;
       color: var(--primary-color);
+    }
+
+    .job-label {
+      display: block;
+      margin: 2px 0 8px;
+      color: var(--primary-color);
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .job-options {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .job-button {
+      min-height: 52px;
+      padding: 10px 8px;
+      border: 2px solid #d5dce0;
+      border-radius: 8px;
+      background: #fff;
+      color: #334155;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .job-button.selected {
+      border-color: var(--accent-color);
+      background: var(--soft-blue);
+      color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(23, 107, 158, 0.15);
     }
 
     .local-note {
@@ -286,6 +324,16 @@
       border: 1px solid var(--border-color);
       border-radius: 12px;
       background: #fbfdfe;
+    }
+
+    .pos-panel:first-child {
+      background: #f4faf7;
+      border-color: #c8e3d1;
+    }
+
+    .pos-panel:last-child {
+      background: #fffdf7;
+      border-color: #eadfb9;
     }
 
     .pos-panel h3 {
@@ -651,10 +699,17 @@
       <!-- Time Clock Module -->
       <div class="card clock-container">
         <h2>⏱️ Clock In or Clock Out</h2>
-        <p class="clock-intro">Use your name, then choose one button.</p>
+        <p class="clock-intro">Enter your name, choose your job, then clock in or out.</p>
         <div class="time-display" id="currentTime">00:00:00 AM</div>
         <label class="student-name-label" for="studentName">Your name</label>
         <input class="student-name-input" type="text" id="studentName" placeholder="Type your first and last name" autocomplete="name">
+        <span class="job-label">Your job</span>
+        <div class="job-options" role="group" aria-label="Choose your job">
+          <button type="button" class="job-button" data-job="Cashier" aria-pressed="false" onclick="selectJobOption(this)">Cashier</button>
+          <button type="button" class="job-button" data-job="Barista" aria-pressed="false" onclick="selectJobOption(this)">Barista</button>
+          <button type="button" class="job-button" data-job="Delivery" aria-pressed="false" onclick="selectJobOption(this)">Delivery</button>
+          <button type="button" class="job-button" data-job="Cart Pusher" aria-pressed="false" onclick="selectJobOption(this)">Cart Pusher</button>
+        </div>
         <div class="clock-buttons">
           <button class="btn btn-clock-in" onclick="clockIn()">CLOCK IN</button>
           <button class="btn btn-clock-out" onclick="clockOut()">CLOCK OUT</button>
@@ -679,7 +734,7 @@
 
     <!-- RIGHT COLUMN: Point of Sale and Kitchen Queue -->
     <div>
-      <div class="card">
+      <div class="card pos-card">
         <h2>🧾 Point of Sale</h2>
         <p class="clock-intro">Take an order, then send it to the kitchen.</p>
         
@@ -769,6 +824,7 @@
 
     const students = loadLocalData(storageKeys.students, {});
     let shiftLog = loadLocalData(storageKeys.shiftLog, []);
+    let selectedJob = '';
 
     function getStudentName() {
       return document.getElementById('studentName').value.trim();
@@ -776,6 +832,32 @@
 
     function getOrderCustomerName() {
       return document.getElementById('orderCustomerName').value.trim();
+    }
+
+    function selectJobOption(button) {
+      selectedJob = button.dataset.job;
+      document.querySelectorAll('.job-button').forEach(option => {
+        const selected = option === button;
+        option.classList.toggle('selected', selected);
+        option.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      });
+    }
+
+    function requireClockDetails() {
+      const nameInput = document.getElementById('studentName');
+      if (!getStudentName()) {
+        showStatus('Enter your name first');
+        nameInput.focus();
+        return false;
+      }
+
+      if (!selectedJob) {
+        showStatus('Choose your job first');
+        document.querySelector('.job-button').focus();
+        return false;
+      }
+
+      return true;
     }
 
     function showStatus(message, isIn = false) {
@@ -799,17 +881,13 @@
 
     function clockIn() {
       const name = getStudentName();
-      if (!name) {
-        showStatus('Enter a student name first');
-        document.getElementById('studentName').focus();
-        return;
-      }
+      if (!requireClockDetails()) return;
 
       if (!students[name] || !students[name].clockedIn) {
-        students[name] = { clockedIn: true, clockInAt: Date.now(), workedMinutes: 0 };
+        students[name] = { clockedIn: true, clockInAt: Date.now(), workedMinutes: 0, job: selectedJob };
         const time = new Date().toLocaleTimeString();
-        showStatus(`${name}: Clocked In`, true);
-        addLog(`${name} clocked IN at ${time}`);
+        showStatus(`${name}: Clocked In as ${selectedJob}`, true);
+        addLog(`${name} (${selectedJob}) clocked IN at ${time}`);
         saveLocalData(storageKeys.students, students);
         renderStudentStatuses();
       }
@@ -817,18 +895,14 @@
 
     function clockOut() {
       const name = getStudentName();
-      if (!name) {
-        showStatus('Enter a student name first');
-        document.getElementById('studentName').focus();
-        return;
-      }
+      if (!requireClockDetails()) return;
 
       if (students[name] && students[name].clockedIn) {
         students[name].workedMinutes = getWorkedMinutes(students[name]);
         students[name].clockedIn = false;
         const time = new Date().toLocaleTimeString();
-        showStatus(`${name}: Clocked Out`);
-        addLog(`${name} clocked OUT at ${time}`);
+        showStatus(`${name}: Clocked Out from ${selectedJob}`);
+        addLog(`${name} (${selectedJob}) clocked OUT at ${time}`);
         saveLocalData(storageKeys.students, students);
         renderStudentStatuses();
       } else {
@@ -865,7 +939,8 @@
         nameElement.textContent = name;
         const statusElement = document.createElement('span');
         statusElement.className = student.clockedIn ? 'in' : 'out';
-        statusElement.textContent = `${student.clockedIn ? 'Clocked In' : 'Clocked Out'} - ${formatDuration(getWorkedMinutes(student))}`;
+        const job = student.job || 'Job not assigned';
+        statusElement.textContent = `${job} - ${student.clockedIn ? 'Clocked In' : 'Clocked Out'}`;
 
         row.append(nameElement, statusElement);
         container.appendChild(row);
