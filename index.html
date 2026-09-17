@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Work Center & Coffee Tracker</title>
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --accent-color: #3498db;
+      --success-color: #2ecc71;
+      --warning-color: #f1c40f;
+      --danger-color: #e74c3c;
+      --bg-color: #f4f7f6;
+      --card-bg: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: var(--bg-color);
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 25px;
+      padding: 15px;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.2rem;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      border-bottom: 2px solid var(--bg-color);
+      padding-bottom: 10px;
+      color: var(--primary-color);
+    }
+
+    /* Clock-In / Clock-Out Styles */
+    .clock-container {
+      text-align: center;
+    }
+
+    .time-display {
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 15px 0;
+      color: var(--primary-color);
+    }
+
+    .clock-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 15px 25px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-clock-in {
+      background-color: var(--success-color);
+      color: white;
+    }
+
+    .btn-clock-out {
+      background-color: var(--danger-color);
+      color: white;
+    }
+
+    .status-badge {
+      display: inline-block;
+      margin-top: 15px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      background-color: #e0e0e0;
+    }
+
+    .status-badge.in {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .status-badge.out {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    .time-log {
+      margin-top: 15px;
+      max-height: 120px;
+      overflow-y: auto;
+      text-align: left;
+      font-size: 0.95rem;
+      background: #f9f9f9;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    /* Google Form Responsive Container */
+    .form-container {
+      position: relative;
+      width: 100%;
+      height: 480px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .form-container iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* Manual Ticket Creator (Option if Form isn't used) */
+    .quick-add {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .quick-add input {
+      flex: 1;
+      padding: 12px;
+      font-size: 1rem;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .btn-add {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    /* Coffee Tracker Styles */
+    .ticket-card {
+      background: #fff;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .ticket-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .ticket-title {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    /* Domino's Pizza Tracker Bar */
+    .tracker-bar {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      margin: 20px 0;
+    }
+
+    .tracker-bar::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background-color: #e0e0e0;
+      z-index: 1;
+      transform: translateY(-50%);
+    }
+
+    .tracker-progress {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      height: 6px;
+      background-color: var(--accent-color);
+      z-index: 1;
+      transform: translateY(-50%);
+      transition: width 0.3s ease;
+    }
+
+    .tracker-step {
+      position: relative;
+      z-index: 2;
+      background: white;
+      border: 3px solid #e0e0e0;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #777;
+    }
+
+    .tracker-step.active {
+      border-color: var(--accent-color);
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    .tracker-step.completed {
+      border-color: var(--success-color);
+      background-color: var(--success-color);
+      color: white;
+    }
+
+    .step-labels {
+      display: flex;
+      justify-content: space-between;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #555;
+      margin-top: 5px;
+    }
+
+    .step-labels div {
+      width: 25%;
+    }
+
+    .ticket-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 10px;
+      font-size: 0.95rem;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>☕ Student Work Station & Coffee Tracker</h1>
+  </header>
+
+  <div class="main-grid">
+
+    <!-- LEFT COLUMN: Clock System & Order Entry -->
+    <div>
+      <!-- Time Clock Module -->
+      <div class="card clock-container">
+        <h2>⏱️ Student Clock In / Out</h2>
+        <div class="time-display" id="currentTime">00:00:00 AM</div>
+        <div class="clock-buttons">
+          <button class="btn btn-clock-in" onclick="clockIn()">CLOCK IN</button>
+          <button class="btn btn-clock-out" onclick="clockOut()">CLOCK OUT</button>
+        </div>
+        <div id="statusBadge" class="status-badge out">Currently: Clocked Out</div>
+        <div class="time-log" id="timeLog">
+          <strong>Shift Log:</strong><br>
+        </div>
+      </div>
+
+      <!-- POS / Google Form Module -->
+      <div class="card">
+        <h2>📝 Register Sales (Google Form)</h2>
+        <p style="font-size:0.9rem; color:#666;">Enter customer orders below:</p>
+        <div class="form-container">
+          <!-- REPLACE THE SRC LINK BELOW WITH YOUR GOOGLE FORM EMBED LINK -->
+          <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc-PLACEHOLDER/viewform?embedded=true">
+            Loading order form...
+          </iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Domino's Pizza Style Tracker -->
+    <div>
+      <div class="card">
+        <h2>🚚 Live Coffee Order Tracker</h2>
+        
+        <!-- Quick Ticket Generator (For testing & local order creation) -->
+        <div class="quick-add">
+          <input type="text" id="orderInput" placeholder="Enter Order (e.g., 1x Iced Latte for Sam)">
+          <button class="btn btn-add" onclick="createTicket()">Create Ticket</button>
+        </div>
+
+        <!-- Dynamic Tickets Container -->
+        <div id="ticketsContainer">
+          <!-- Active orders will appear here -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- Live Clock ---
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('currentTime').innerText = now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // --- Clock In / Clock Out System ---
+    let isClockedIn = false;
+
+    function clockIn() {
+      if (!isClockedIn) {
+        isClockedIn = true;
+        const time = new Date().toLocaleTimeString();
+        document.getElementById('statusBadge').className = 'status-badge in';
+        document.getElementById('statusBadge').innerText = 'Currently: Clocked In';
+        addLog(`🟢 Clocked IN at ${time}`);
+      }
+    }
+
+    function clockOut() {
+      if (isClockedIn) {
+        isClockedIn = false;
+        const time = new Date().toLocaleTimeString();
+        document.getElementById('statusBadge').className = 'status-badge out';
+        document.getElementById('statusBadge').innerText = 'Currently: Clocked Out';
+        addLog(`🔴 Clocked OUT at ${time}`);
+      }
+    }
+
+    function addLog(message) {
+      const log = document.getElementById('timeLog');
+      log.innerHTML += `${message}<br>`;
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // --- Domino's Pizza-Style Order Tracker System ---
+    let orders = [
+      { id: 101, details: "1x Large Vanilla Latte - Mr. Smith", stage: 1 }
+    ];
+
+    const stages = [
+      "Order Received",
+      "Brewing & Preparing",
+      "Ready for Pickup",
+      "Delivered"
+    ];
+
+    function createTicket() {
+      const input = document.getElementById('orderInput');
+      if (input.value.trim() === '') return;
+
+      const newOrder = {
+        id: Math.floor(100 + Math.random() * 900),
+        details: input.value,
+        stage: 0
+      };
+
+      orders.unshift(newOrder);
+      input.value = '';
+      renderTickets();
+    }
+
+    function advanceStage(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (order && order.stage < stages.length - 1) {
+        order.stage++;
+        renderTickets();
+      }
+    }
+
+    function removeTicket(orderId) {
+      orders = orders.filter(o => o.id !== orderId);
+      renderTickets();
+    }
+
+    function renderTickets() {
+      const container = document.getElementById('ticketsContainer');
+      container.innerHTML = '';
+
+      if (orders.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:#888;">No active orders right now.</p>`;
+        return;
+      }
+
+      orders.forEach(order => {
+        const progressPercent = (order.stage / (stages.length - 1)) * 100;
+        
+        let stepsHTML = '';
+        stages.forEach((stageName, index) => {
+          let stepClass = 'tracker-step';
+          if (index < order.stage) stepClass += ' completed';
+          else if (index === order.stage) stepClass += ' active';
+
+          stepsHTML += `<div class="${stepClass}">${index + 1}</div>`;
+        });
+
+        const ticketCard = document.createElement('div');
+        ticketCard.className = 'ticket-card';
+        ticketCard.innerHTML = `
+          <div class="ticket-header">
+            <span class="ticket-title">Ticket #${order.id}: ${order.details}</span>
+            <span style="font-weight:bold; color:var(--accent-color);">${stages[order.stage]}</span>
+          </div>
+          
+          <div class="tracker-bar">
+            <div class="tracker-progress" style="width: ${progressPercent}%;"></div>
+            ${stepsHTML}
+          </div>
+          
+          <div class="step-labels">
+            <div>Received</div>
+            <div>Brewing</div>
+            <div>Ready</div>
+            <div>Delivered</div>
+          </div>
+
+          <div class="ticket-actions">
+            ${order.stage < stages.length - 1 
+              ? `<button class="btn btn-action btn-add" onclick="advanceStage(${order.id})">➡️ Next Step: ${stages[order.stage + 1]}</button>`
+              : `<button class="btn btn-action btn-clock-in" onclick="removeTicket(${order.id})">✅ Complete & Archive Ticket</button>`
+            }
+          </div>
+        `;
+        container.appendChild(ticketCard);
+      });
+    }
+
+    // Initial Render
+    renderTickets();
+  </script>
+</body>
+</html>
