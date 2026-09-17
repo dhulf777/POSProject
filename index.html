@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Work Center & Point of Sale</title>
+  <title>SOAR Coffee Shop | Point of Sale</title>
   <style>
     :root {
       --primary-color: #17324d;
@@ -370,6 +370,23 @@
       border-radius: 8px;
     }
 
+    .order-notes {
+      width: 100%;
+      min-height: 78px;
+      margin-top: 10px;
+      padding: 12px;
+      resize: vertical;
+      border: 2px solid #d5dce0;
+      border-radius: 8px;
+      background: #fff;
+      color: #243746;
+      font-size: 1rem;
+    }
+
+    .order-notes::placeholder {
+      color: #7b8790;
+    }
+
     .option-group {
       display: flex;
       flex-wrap: wrap;
@@ -631,6 +648,16 @@
       text-align: right;
     }
 
+    .special-request {
+      padding: 10px 12px;
+      border: 1px solid #e8d39a;
+      border-radius: 5px;
+      background: #fff8df;
+      color: #5f4a12;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
     /* Kitchen order progress */
     .tracker-bar {
       display: flex;
@@ -756,7 +783,7 @@
 <body>
 
   <header>
-    <h1>☕ Student Work Station & Point of Sale</h1>
+    <h1>☕ SOAR Coffee Shop</h1>
   </header>
 
   <div class="main-grid">
@@ -790,20 +817,13 @@
         </div>
       </div>
 
-      <!-- Order Instructions -->
-      <div class="card">
-        <h2>📝 How to Order</h2>
-        <div class="local-info" role="note">
-          Enter the customer name, choose a drink, and send the order. Soda orders always include a small snack.
-        </div>
-      </div>
     </div>
 
-    <!-- RIGHT COLUMN: Point of Sale and Kitchen Queue -->
+    <!-- RIGHT COLUMN: Point of Sale and Coffee Bar -->
     <div>
       <div class="card pos-card">
         <h2>🧾 Point of Sale</h2>
-        <p class="clock-intro">Take an order, then send it to the kitchen.</p>
+        <p class="clock-intro">Take an order, then send it to the coffee bar.</p>
         
         <!-- Point-of-sale order entry -->
         <div class="quick-add pos-layout">
@@ -825,6 +845,8 @@
             <h3>Customer order</h3>
             <label class="student-name-label" for="orderCustomerName">Customer name</label>
             <input class="order-student-name" type="text" id="orderCustomerName" placeholder="Enter customer name" autocomplete="name" oninput="updateOrderPreview()">
+            <label class="student-name-label" for="orderNotes">Special requests</label>
+            <textarea class="order-notes" id="orderNotes" placeholder="Extra syrup, less ice, oat milk..." oninput="updateOrderPreview()"></textarea>
             <div class="pos-order-lines" id="orderPreview" role="status" aria-live="polite">
               <div class="pos-order-line"><span>Drink</span><strong>Iced coffee</strong></div>
               <div class="pos-order-line"><span>Customer</span><strong>Name needed</strong></div>
@@ -837,7 +859,7 @@
 
         <!-- Dynamic Tickets Container -->
         <div class="order-section-title">
-          <h3>Kitchen Queue</h3>
+          <h3>Coffee Bar</h3>
           <span>Orders being prepared</span>
         </div>
         <div id="ticketsContainer">
@@ -900,6 +922,10 @@
 
     function getOrderCustomerName() {
       return document.getElementById('orderCustomerName').value.trim();
+    }
+
+    function getOrderNotes() {
+      return document.getElementById('orderNotes').value.trim();
     }
 
     function selectJobOption(button) {
@@ -1015,17 +1041,13 @@
       });
     }
 
-    // --- Point-of-sale and kitchen queue system ---
+    // --- Point-of-sale and coffee bar system ---
     let orders = loadLocalData(storageKeys.orders, [
-      {
-        id: 101,
-        customerName: 'Mr. Smith',
-        drink: 'Iced coffee',
-        snack: '',
-        stage: 1
-      }
-    ]);
-    let archivedOrders = loadLocalData(storageKeys.archivedOrders, []);
+    ]).filter(order => order.customerName !== 'Mr. Smith');
+    let archivedOrders = loadLocalData(storageKeys.archivedOrders, [])
+      .filter(order => order.customerName !== 'Mr. Smith');
+    saveLocalData(storageKeys.orders, orders);
+    saveLocalData(storageKeys.archivedOrders, archivedOrders);
 
     const stages = [
       "Order Received",
@@ -1051,18 +1073,21 @@
 
     function updateOrderPreview() {
       const customerName = getOrderCustomerName();
+      const notes = getOrderNotes();
       const preview = document.getElementById('orderPreview');
       const snack = selectedOrderOptions.drink === 'Soda' ? ' | Small snack included' : '';
       preview.innerHTML = `
         <div class="pos-order-line"><span>Drink</span><strong>${escapeHtml(selectedOrderOptions.drink)}</strong></div>
         ${snack ? '<div class="pos-order-line"><span>Included</span><strong>Small snack</strong></div>' : ''}
         <div class="pos-order-line"><span>Customer</span><strong>${escapeHtml(customerName || 'Name needed')}</strong></div>
+        ${notes ? `<div class="special-request"><strong>Special request:</strong> ${escapeHtml(notes)}</div>` : ''}
       `;
     }
 
     function resetOrder() {
       selectedOrderOptions.drink = 'Iced coffee';
       document.getElementById('orderCustomerName').value = '';
+      document.getElementById('orderNotes').value = '';
 
       Object.entries(selectedOrderOptions).forEach(([group, value]) => {
         document.querySelectorAll(`[data-group="${group}"]`).forEach(option => {
@@ -1087,6 +1112,7 @@
         customerName,
         drink: selectedOrderOptions.drink,
         snack: selectedOrderOptions.drink === 'Soda' ? 'Small snack' : '',
+        notes: getOrderNotes(),
         createdAt: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
         stage: 0
       };
@@ -1149,6 +1175,7 @@
         const customerName = escapeHtml(order.customerName || order.studentName || 'Name not provided');
         const drink = escapeHtml(order.drink || order.details || 'See order details');
         const snack = escapeHtml(order.snack || '');
+        const notes = escapeHtml(order.notes || '');
         const ticketNumber = String(order.id).slice(-4).padStart(4, '0');
         const orderTime = escapeHtml(order.createdAt || 'Order time unavailable');
         const legacyDetails = order.coffee || order.syrup
@@ -1186,6 +1213,7 @@
             <div class="order-item"><span>Drink</span><strong>${drink}</strong></div>
             ${snack ? `<div class="order-item"><span>Snack</span><strong>${snack}</strong></div>` : ''}
             ${legacyDetails}
+            ${notes ? `<div class="special-request"><strong>Special request:</strong> ${notes}</div>` : ''}
           </div>
           
           <div class="tracker-bar">
@@ -1227,6 +1255,7 @@
         const customerName = escapeHtml(order.customerName || order.studentName || 'Name not provided');
         const drink = escapeHtml(order.drink || order.details || 'See order details');
         const snack = escapeHtml(order.snack || '');
+        const notes = escapeHtml(order.notes || '');
         const archivedAt = escapeHtml(order.archivedAt || 'Completed');
         const ticketNumber = String(order.id).slice(-4).padStart(4, '0');
         const ticketCard = document.createElement('div');
@@ -1246,6 +1275,7 @@
           <div class="order-items">
             <div class="order-item"><span>Drink</span><strong>${drink}</strong></div>
             ${snack ? `<div class="order-item"><span>Snack</span><strong>${snack}</strong></div>` : ''}
+            ${notes ? `<div class="special-request"><strong>Special request:</strong> ${notes}</div>` : ''}
           </div>
           <div class="ticket-actions">
             <button class="btn btn-action btn-restore" onclick="restoreOrder(${order.id})">Restore Order</button>
