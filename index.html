@@ -260,6 +260,15 @@
       margin-bottom: 20px;
     }
 
+    .order-student-name {
+      width: 100%;
+      min-height: 52px;
+      padding: 12px;
+      font-size: 1.15rem;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+
     .option-group {
       display: flex;
       flex-wrap: wrap;
@@ -324,6 +333,67 @@
       font-size: 1.3rem;
       font-weight: bold;
       color: var(--primary-color);
+    }
+
+    .ticket-stage {
+      display: inline-block;
+      margin-top: 5px;
+      color: var(--accent-color);
+      font-size: 1.05rem;
+      font-weight: bold;
+    }
+
+    .order-for {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: baseline;
+      margin-bottom: 12px;
+      padding: 12px;
+      background: #fff7d6;
+      border-left: 6px solid var(--warning-color);
+      border-radius: 6px;
+      font-size: 1.2rem;
+    }
+
+    .order-label {
+      font-size: 0.9rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #665400;
+    }
+
+    .order-items-title {
+      margin: 12px 0 8px;
+      color: var(--primary-color);
+      font-size: 1rem;
+      text-transform: uppercase;
+    }
+
+    .order-items {
+      display: grid;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      background: #f4f7f6;
+      border-radius: 6px;
+      font-size: 1.1rem;
+    }
+
+    .order-item span {
+      color: #555;
+      font-weight: bold;
+    }
+
+    .order-item strong {
+      color: #222;
+      text-align: right;
     }
 
     /* Domino's Pizza Tracker Bar */
@@ -489,6 +559,8 @@
         
         <!-- Button-based ticket builder -->
         <div class="quick-add">
+          <label class="student-name-label" for="orderStudentName">Name of student ordering</label>
+          <input class="order-student-name" type="text" id="orderStudentName" placeholder="Type the student's name" autocomplete="name">
           <div class="option-group">
             <span class="option-label" id="drink-options-label">Drink</span>
             <button type="button" class="option-button selected" aria-pressed="true" data-group="drink" data-value="Latte" onclick="selectOrderOption(this)">Latte</button>
@@ -556,6 +628,10 @@
 
     function getStudentName() {
       return document.getElementById('studentName').value.trim();
+    }
+
+    function getOrderStudentName() {
+      return document.getElementById('orderStudentName').value.trim() || getStudentName();
     }
 
     function showStatus(message, isIn = false) {
@@ -673,7 +749,14 @@
 
     // --- Domino's Pizza-Style Order Tracker System ---
     let orders = loadLocalData(storageKeys.orders, [
-      { id: 101, details: "1x Large Vanilla Latte - Ordered by: Mr. Smith", stage: 1 }
+      {
+        id: 101,
+        studentName: 'Mr. Smith',
+        drink: 'Large Vanilla Latte',
+        coffee: 'Caffeinated',
+        syrup: 'No extra syrup',
+        stage: 1
+      }
     ]);
 
     const stages = [
@@ -700,16 +783,19 @@
     }
 
     function createTicket() {
-      const studentName = getStudentName();
+      const studentName = getOrderStudentName();
       if (!studentName) {
         showStatus('Enter the ordering student name first');
-        document.getElementById('studentName').focus();
+        document.getElementById('orderStudentName').focus();
         return;
       }
 
       const newOrder = {
         id: Date.now(),
-        details: `1x ${selectedOrderOptions.drink} - ${selectedOrderOptions.coffee}, ${selectedOrderOptions.syrup} - Ordered by: ${studentName}`,
+        studentName,
+        drink: selectedOrderOptions.drink,
+        coffee: selectedOrderOptions.coffee,
+        syrup: selectedOrderOptions.syrup,
         stage: 0
       };
 
@@ -733,6 +819,12 @@
       renderTickets();
     }
 
+    function escapeHtml(value) {
+      const element = document.createElement('div');
+      element.textContent = String(value);
+      return element.innerHTML;
+    }
+
     function renderTickets() {
       const container = document.getElementById('ticketsContainer');
       container.innerHTML = '';
@@ -744,6 +836,10 @@
 
       orders.forEach(order => {
         const progressPercent = (order.stage / (stages.length - 1)) * 100;
+        const studentName = escapeHtml(order.studentName || 'Name not provided');
+        const drink = escapeHtml(order.drink || order.details || 'See order details');
+        const coffee = escapeHtml(order.coffee || 'Not specified');
+        const syrup = escapeHtml(order.syrup || 'Not specified');
         
         let stepsHTML = '';
         stages.forEach((stageName, index) => {
@@ -758,8 +854,22 @@
         ticketCard.className = 'ticket-card';
         ticketCard.innerHTML = `
           <div class="ticket-header">
-            <span class="ticket-title">Ticket #${order.id}: ${order.details}</span>
-            <span style="font-weight:bold; color:var(--accent-color);">${stages[order.stage]}</span>
+            <div>
+              <div class="ticket-title">Ticket #${order.id}</div>
+              <div class="ticket-stage">${stages[order.stage]}</div>
+            </div>
+          </div>
+
+          <div class="order-for">
+            <span class="order-label">Student ordering:</span>
+            <strong>${studentName}</strong>
+          </div>
+
+          <div class="order-items-title">Items ordered</div>
+          <div class="order-items">
+            <div class="order-item"><span>Drink</span><strong>${drink}</strong></div>
+            <div class="order-item"><span>Coffee</span><strong>${coffee}</strong></div>
+            <div class="order-item"><span>Syrup</span><strong>${syrup}</strong></div>
           </div>
           
           <div class="tracker-bar">
