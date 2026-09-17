@@ -84,11 +84,60 @@
 
     .clock-buttons {
       display: flex;
+      flex-wrap: wrap;
       gap: 15px;
       justify-content: center;
     }
 
+    .student-name-input {
+      width: 100%;
+      min-height: 52px;
+      padding: 12px;
+      margin: 10px 0 15px;
+      font-size: 1.15rem;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .student-name-label {
+      display: block;
+      text-align: left;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .local-note {
+      margin: 0 0 15px;
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    .student-status-list {
+      margin-top: 15px;
+      text-align: left;
+    }
+
+    .student-status-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 8px 10px;
+      margin-top: 6px;
+      border-radius: 6px;
+      background: #f9f9f9;
+    }
+
+    .student-status-row .in {
+      color: #155724;
+      font-weight: bold;
+    }
+
+    .student-status-row .out {
+      color: #721c24;
+    }
+
     .btn {
+      min-height: 52px;
       padding: 15px 25px;
       font-size: 1.2rem;
       font-weight: bold;
@@ -100,6 +149,12 @@
 
     .btn:active {
       transform: scale(0.98);
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 4px solid #f39c12;
+      outline-offset: 3px;
     }
 
     .btn-clock-in {
@@ -143,35 +198,58 @@
       border-radius: 8px;
     }
 
-    /* Google Form Responsive Container */
-    .form-container {
-      position: relative;
-      width: 100%;
-      height: 480px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .form-container iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
+    .local-info {
+      padding: 18px;
+      border-left: 6px solid var(--success-color);
+      background: #f1fbf4;
+      color: #245b35;
+      font-size: 1.05rem;
+      line-height: 1.5;
     }
 
     /* Manual Ticket Creator (Option if Form isn't used) */
     .quick-add {
-      display: flex;
+      display: grid;
       gap: 10px;
       margin-bottom: 20px;
     }
 
-    .quick-add input {
-      flex: 1;
-      padding: 12px;
-      font-size: 1rem;
-      border: 2px solid #ccc;
+    .option-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .option-label {
+      min-width: 105px;
+      font-weight: bold;
+      color: var(--primary-color);
+    }
+
+    .option-button {
+      min-height: 48px;
+      padding: 10px 14px;
+      border: 2px solid #d5dce0;
       border-radius: 8px;
+      background: white;
+      color: #333;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .option-button[aria-pressed="true"] {
+      box-shadow: 0 0 0 2px #176b9e;
+    }
+
+    .option-button.selected {
+      border-color: var(--accent-color);
+      background-color: #eaf5fc;
+      color: #176b9e;
+    }
+
+    .quick-add .btn-add {
+      width: 100%;
     }
 
     .btn-add {
@@ -287,6 +365,22 @@
       font-size: 0.95rem;
       border-radius: 6px;
     }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .card {
+        padding: 15px;
+      }
+
+      .ticket-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -302,26 +396,28 @@
       <!-- Time Clock Module -->
       <div class="card clock-container">
         <h2>⏱️ Student Clock In / Out</h2>
+        <p class="local-note">Your information is saved on this device.</p>
         <div class="time-display" id="currentTime">00:00:00 AM</div>
+        <label class="student-name-label" for="studentName">Student name</label>
+        <input class="student-name-input" type="text" id="studentName" placeholder="Type your name" autocomplete="name">
         <div class="clock-buttons">
           <button class="btn btn-clock-in" onclick="clockIn()">CLOCK IN</button>
           <button class="btn btn-clock-out" onclick="clockOut()">CLOCK OUT</button>
         </div>
-        <div id="statusBadge" class="status-badge out">Currently: Clocked Out</div>
-        <div class="time-log" id="timeLog">
+        <div id="statusBadge" class="status-badge out" role="status" aria-live="polite">Enter a name to clock in or out</div>
+        <div class="student-status-list" id="studentStatusList">
+          <strong>Student Status:</strong>
+        </div>
+        <div class="time-log" id="timeLog" aria-live="polite">
           <strong>Shift Log:</strong><br>
         </div>
       </div>
 
-      <!-- POS / Google Form Module -->
+      <!-- Local POS Information -->
       <div class="card">
-        <h2>📝 Register Sales (Google Form)</h2>
-        <p style="font-size:0.9rem; color:#666;">Enter customer orders below:</p>
-        <div class="form-container">
-          <!-- REPLACE THE SRC LINK BELOW WITH YOUR GOOGLE FORM EMBED LINK -->
-          <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSc-PLACEHOLDER/viewform?embedded=true">
-            Loading order form...
-          </iframe>
+        <h2>📝 Local POS</h2>
+        <div class="local-info" role="note">
+          Choose the order buttons on the right. Clock-ins, shift logs, and coffee tickets are saved only on this device.
         </div>
       </div>
     </div>
@@ -331,9 +427,25 @@
       <div class="card">
         <h2>🚚 Live Coffee Order Tracker</h2>
         
-        <!-- Quick Ticket Generator (For testing & local order creation) -->
+        <!-- Button-based ticket builder -->
         <div class="quick-add">
-          <input type="text" id="orderInput" placeholder="Enter Order (e.g., 1x Iced Latte for Sam)">
+          <div class="option-group">
+            <span class="option-label" id="drink-options-label">Drink</span>
+            <button type="button" class="option-button selected" aria-pressed="true" data-group="drink" data-value="Latte" onclick="selectOrderOption(this)">Latte</button>
+            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Americano" onclick="selectOrderOption(this)">Americano</button>
+            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Mocha" onclick="selectOrderOption(this)">Mocha</button>
+            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Hot Chocolate" onclick="selectOrderOption(this)">Hot Chocolate</button>
+          </div>
+          <div class="option-group">
+            <span class="option-label" id="coffee-options-label">Coffee</span>
+            <button type="button" class="option-button selected" aria-pressed="true" data-group="coffee" data-value="Caffeinated" onclick="selectOrderOption(this)">Caffeinated</button>
+            <button type="button" class="option-button" aria-pressed="false" data-group="coffee" data-value="Decaf" onclick="selectOrderOption(this)">Decaf</button>
+          </div>
+          <div class="option-group">
+            <span class="option-label" id="syrup-options-label">Syrup</span>
+            <button type="button" class="option-button selected" aria-pressed="true" data-group="syrup" data-value="No extra syrup" onclick="selectOrderOption(this)">No Extra Syrup</button>
+            <button type="button" class="option-button" aria-pressed="false" data-group="syrup" data-value="Extra syrup" onclick="selectOrderOption(this)">Extra Syrup</button>
+          </div>
           <button class="btn btn-add" onclick="createTicket()">Create Ticket</button>
         </div>
 
@@ -356,38 +468,120 @@
     updateClock();
 
     // --- Clock In / Clock Out System ---
-    let isClockedIn = false;
+    const storageKeys = {
+      students: 'studentWorkCenter.students',
+      shiftLog: 'studentWorkCenter.shiftLog',
+      orders: 'studentWorkCenter.orders'
+    };
+
+    function loadLocalData(key, fallback) {
+      try {
+        const savedData = localStorage.getItem(key);
+        return savedData ? JSON.parse(savedData) : fallback;
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    function saveLocalData(key, data) {
+      try {
+        localStorage.setItem(key, JSON.stringify(data));
+      } catch (error) {
+        showStatus('This browser cannot save local data');
+      }
+    }
+
+    const students = loadLocalData(storageKeys.students, {});
+    let shiftLog = loadLocalData(storageKeys.shiftLog, []);
+
+    function getStudentName() {
+      return document.getElementById('studentName').value.trim();
+    }
+
+    function showStatus(message, isIn = false) {
+      const badge = document.getElementById('statusBadge');
+      badge.className = `status-badge ${isIn ? 'in' : 'out'}`;
+      badge.innerText = message;
+    }
 
     function clockIn() {
-      if (!isClockedIn) {
-        isClockedIn = true;
+      const name = getStudentName();
+      if (!name) {
+        showStatus('Enter a student name first');
+        document.getElementById('studentName').focus();
+        return;
+      }
+
+      if (!students[name] || !students[name].clockedIn) {
+        students[name] = { clockedIn: true };
         const time = new Date().toLocaleTimeString();
-        document.getElementById('statusBadge').className = 'status-badge in';
-        document.getElementById('statusBadge').innerText = 'Currently: Clocked In';
-        addLog(`🟢 Clocked IN at ${time}`);
+        showStatus(`${name}: Clocked In`, true);
+        addLog(`${name} clocked IN at ${time}`);
+        saveLocalData(storageKeys.students, students);
+        renderStudentStatuses();
       }
     }
 
     function clockOut() {
-      if (isClockedIn) {
-        isClockedIn = false;
+      const name = getStudentName();
+      if (!name) {
+        showStatus('Enter a student name first');
+        document.getElementById('studentName').focus();
+        return;
+      }
+
+      if (students[name] && students[name].clockedIn) {
+        students[name].clockedIn = false;
         const time = new Date().toLocaleTimeString();
-        document.getElementById('statusBadge').className = 'status-badge out';
-        document.getElementById('statusBadge').innerText = 'Currently: Clocked Out';
-        addLog(`🔴 Clocked OUT at ${time}`);
+        showStatus(`${name}: Clocked Out`);
+        addLog(`${name} clocked OUT at ${time}`);
+        saveLocalData(storageKeys.students, students);
+        renderStudentStatuses();
+      } else {
+        showStatus(`${name} is not clocked in`);
       }
     }
 
     function addLog(message) {
+      shiftLog.push(message);
+      saveLocalData(storageKeys.shiftLog, shiftLog);
+      renderShiftLog();
+    }
+
+    function renderShiftLog() {
       const log = document.getElementById('timeLog');
-      log.innerHTML += `${message}<br>`;
+      log.innerHTML = '<strong>Shift Log:</strong><br>';
+      shiftLog.forEach(message => {
+        const entry = document.createElement('div');
+        entry.textContent = message;
+        log.appendChild(entry);
+      });
       log.scrollTop = log.scrollHeight;
     }
 
+    function renderStudentStatuses() {
+      const container = document.getElementById('studentStatusList');
+      container.innerHTML = '<strong>Student Status:</strong>';
+
+      Object.entries(students).forEach(([name, student]) => {
+        const row = document.createElement('div');
+        row.className = 'student-status-row';
+
+        const nameElement = document.createElement('span');
+        nameElement.textContent = name;
+        const statusElement = document.createElement('span');
+        statusElement.className = student.clockedIn ? 'in' : 'out';
+        statusElement.textContent = student.clockedIn ? 'Clocked In' : 'Clocked Out';
+
+        row.append(nameElement, statusElement);
+        container.appendChild(row);
+      });
+    }
+
     // --- Domino's Pizza-Style Order Tracker System ---
-    let orders = [
+    let orders = loadLocalData(storageKeys.orders, [
       { id: 101, details: "1x Large Vanilla Latte - Mr. Smith", stage: 1 }
-    ];
+    ]);
 
     const stages = [
       "Order Received",
@@ -396,18 +590,34 @@
       "Delivered"
     ];
 
+    const selectedOrderOptions = {
+      drink: 'Latte',
+      coffee: 'Caffeinated',
+      syrup: 'No extra syrup'
+    };
+
+    function selectOrderOption(button) {
+      const group = button.dataset.group;
+      selectedOrderOptions[group] = button.dataset.value;
+
+      document.querySelectorAll(`[data-group="${group}"]`).forEach(option => {
+        option.classList.toggle('selected', option === button);
+        option.setAttribute('aria-pressed', option === button ? 'true' : 'false');
+      });
+    }
+
     function createTicket() {
-      const input = document.getElementById('orderInput');
-      if (input.value.trim() === '') return;
+      const studentName = getStudentName();
+      const customerLabel = studentName ? ` for ${studentName}` : '';
 
       const newOrder = {
-        id: Math.floor(100 + Math.random() * 900),
-        details: input.value,
+        id: Date.now(),
+        details: `1x ${selectedOrderOptions.drink} - ${selectedOrderOptions.coffee}, ${selectedOrderOptions.syrup}${customerLabel}`,
         stage: 0
       };
 
       orders.unshift(newOrder);
-      input.value = '';
+      saveLocalData(storageKeys.orders, orders);
       renderTickets();
     }
 
@@ -415,12 +625,14 @@
       const order = orders.find(o => o.id === orderId);
       if (order && order.stage < stages.length - 1) {
         order.stage++;
+        saveLocalData(storageKeys.orders, orders);
         renderTickets();
       }
     }
 
     function removeTicket(orderId) {
       orders = orders.filter(o => o.id !== orderId);
+      saveLocalData(storageKeys.orders, orders);
       renderTickets();
     }
 
@@ -476,7 +688,9 @@
       });
     }
 
-    // Initial Render
+    // Restore saved data on startup.
+    renderStudentStatuses();
+    renderShiftLog();
     renderTickets();
   </script>
 </body>
