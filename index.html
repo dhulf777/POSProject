@@ -136,6 +136,52 @@
       color: #721c24;
     }
 
+    .hours-calculator {
+      margin-top: 18px;
+      padding-top: 15px;
+      border-top: 2px solid var(--bg-color);
+      text-align: left;
+    }
+
+    .hours-calculator h3 {
+      margin: 0 0 10px;
+      color: var(--primary-color);
+    }
+
+    .time-inputs {
+      display: flex;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .time-input-group {
+      flex: 1;
+    }
+
+    .time-input-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .time-input-group input {
+      width: 100%;
+      min-height: 48px;
+      padding: 8px;
+      font-size: 1.1rem;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .hours-result {
+      margin-top: 12px;
+      padding: 10px;
+      background: #eaf5fc;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+    }
+
     .btn {
       min-height: 52px;
       padding: 15px 25px;
@@ -396,7 +442,6 @@
       <!-- Time Clock Module -->
       <div class="card clock-container">
         <h2>⏱️ Student Clock In / Out</h2>
-        <p class="local-note">Your information is saved on this device.</p>
         <div class="time-display" id="currentTime">00:00:00 AM</div>
         <label class="student-name-label" for="studentName">Student name</label>
         <input class="student-name-input" type="text" id="studentName" placeholder="Type your name" autocomplete="name">
@@ -408,16 +453,31 @@
         <div class="student-status-list" id="studentStatusList">
           <strong>Student Status:</strong>
         </div>
+        <div class="hours-calculator">
+          <h3>Hours Worked</h3>
+          <div class="time-inputs">
+            <div class="time-input-group">
+              <label for="hoursStart">Start time</label>
+              <input type="time" id="hoursStart">
+            </div>
+            <div class="time-input-group">
+              <label for="hoursEnd">End time</label>
+              <input type="time" id="hoursEnd">
+            </div>
+          </div>
+          <button class="btn btn-add" type="button" onclick="calculateHours()">Calculate Hours</button>
+          <div class="hours-result" id="hoursResult" role="status" aria-live="polite">Enter a start and end time</div>
+        </div>
         <div class="time-log" id="timeLog" aria-live="polite">
           <strong>Shift Log:</strong><br>
         </div>
       </div>
 
-      <!-- Local POS Information -->
+      <!-- Order Instructions -->
       <div class="card">
-        <h2>📝 Local POS</h2>
+        <h2>📝 How to Order</h2>
         <div class="local-info" role="note">
-          Choose the order buttons on the right. Clock-ins, shift logs, and coffee tickets are saved only on this device.
+          Choose a drink, choose caffeinated or decaf, choose syrup, then press Create Ticket.
         </div>
       </div>
     </div>
@@ -504,6 +564,19 @@
       badge.innerText = message;
     }
 
+    function getWorkedMinutes(student) {
+      if (student.clockedIn && student.clockInAt) {
+        return Math.max(0, Math.floor((Date.now() - student.clockInAt) / 60000));
+      }
+      return Number(student.workedMinutes) || 0;
+    }
+
+    function formatDuration(totalMinutes) {
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return `${hours} hr ${minutes} min`;
+    }
+
     function clockIn() {
       const name = getStudentName();
       if (!name) {
@@ -513,7 +586,7 @@
       }
 
       if (!students[name] || !students[name].clockedIn) {
-        students[name] = { clockedIn: true };
+        students[name] = { clockedIn: true, clockInAt: Date.now(), workedMinutes: 0 };
         const time = new Date().toLocaleTimeString();
         showStatus(`${name}: Clocked In`, true);
         addLog(`${name} clocked IN at ${time}`);
@@ -531,6 +604,7 @@
       }
 
       if (students[name] && students[name].clockedIn) {
+        students[name].workedMinutes = getWorkedMinutes(students[name]);
         students[name].clockedIn = false;
         const time = new Date().toLocaleTimeString();
         showStatus(`${name}: Clocked Out`);
@@ -571,16 +645,35 @@
         nameElement.textContent = name;
         const statusElement = document.createElement('span');
         statusElement.className = student.clockedIn ? 'in' : 'out';
-        statusElement.textContent = student.clockedIn ? 'Clocked In' : 'Clocked Out';
+        statusElement.textContent = `${student.clockedIn ? 'Clocked In' : 'Clocked Out'} - ${formatDuration(getWorkedMinutes(student))}`;
 
         row.append(nameElement, statusElement);
         container.appendChild(row);
       });
     }
 
+    function calculateHours() {
+      const start = document.getElementById('hoursStart').value;
+      const end = document.getElementById('hoursEnd').value;
+      const result = document.getElementById('hoursResult');
+
+      if (!start || !end) {
+        result.textContent = 'Enter both times';
+        return;
+      }
+
+      const [startHours, startMinutes] = start.split(':').map(Number);
+      const [endHours, endMinutes] = end.split(':').map(Number);
+      const startTotal = (startHours * 60) + startMinutes;
+      let endTotal = (endHours * 60) + endMinutes;
+
+      if (endTotal < startTotal) endTotal += 24 * 60;
+      result.textContent = `Hours worked: ${formatDuration(endTotal - startTotal)}`;
+    }
+
     // --- Domino's Pizza-Style Order Tracker System ---
     let orders = loadLocalData(storageKeys.orders, [
-      { id: 101, details: "1x Large Vanilla Latte - Mr. Smith", stage: 1 }
+      { id: 101, details: "1x Large Vanilla Latte - Ordered by: Mr. Smith", stage: 1 }
     ]);
 
     const stages = [
@@ -608,11 +701,15 @@
 
     function createTicket() {
       const studentName = getStudentName();
-      const customerLabel = studentName ? ` for ${studentName}` : '';
+      if (!studentName) {
+        showStatus('Enter the ordering student name first');
+        document.getElementById('studentName').focus();
+        return;
+      }
 
       const newOrder = {
         id: Date.now(),
-        details: `1x ${selectedOrderOptions.drink} - ${selectedOrderOptions.coffee}, ${selectedOrderOptions.syrup}${customerLabel}`,
+        details: `1x ${selectedOrderOptions.drink} - ${selectedOrderOptions.coffee}, ${selectedOrderOptions.syrup} - Ordered by: ${studentName}`,
         stage: 0
       };
 
