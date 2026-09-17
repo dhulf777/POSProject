@@ -342,6 +342,19 @@
       font-size: 1.15rem;
     }
 
+    .pos-register-label {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #e5f1e9;
+      color: #28633d;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
     .pos-kicker {
       margin: -6px 0 16px;
       color: #64748b;
@@ -430,7 +443,7 @@
 
     .pos-actions {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 10px;
       margin-top: 12px;
     }
@@ -795,7 +808,8 @@
         <!-- Point-of-sale order entry -->
         <div class="quick-add pos-layout">
           <div class="pos-panel">
-            <h3>Menu</h3>
+            <span class="pos-register-label">Barista register</span>
+            <h3>Choose an item</h3>
             <p class="pos-kicker">Select one drink.</p>
             <div class="pos-menu" aria-label="Drink menu">
             <button type="button" class="option-button selected" aria-pressed="true" data-group="drink" data-value="Iced coffee" onclick="selectOrderOption(this)">Iced Coffee</button>
@@ -807,7 +821,8 @@
           </div>
 
           <div class="pos-panel">
-            <h3>Current Order</h3>
+            <span class="pos-register-label">Order ticket</span>
+            <h3>Customer order</h3>
             <label class="student-name-label" for="orderCustomerName">Customer name</label>
             <input class="order-student-name" type="text" id="orderCustomerName" placeholder="Enter customer name" autocomplete="name" oninput="updateOrderPreview()">
             <div class="pos-order-lines" id="orderPreview" role="status" aria-live="polite">
@@ -816,7 +831,6 @@
             </div>
             <div class="pos-actions">
               <button class="btn btn-add" onclick="createTicket()">SEND ORDER</button>
-              <button class="btn btn-clear" type="button" onclick="resetOrder()">NEW ORDER</button>
             </div>
           </div>
         </div>
