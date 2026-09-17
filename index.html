@@ -6,13 +6,16 @@
   <title>Student Work Center & Drink Order Tracker</title>
   <style>
     :root {
-      --primary-color: #2c3e50;
-      --accent-color: #3498db;
-      --success-color: #2ecc71;
-      --warning-color: #f1c40f;
-      --danger-color: #e74c3c;
-      --bg-color: #f4f7f6;
+      --primary-color: #17324d;
+      --accent-color: #176b9e;
+      --success-color: #23864a;
+      --warning-color: #d49b16;
+      --danger-color: #b94343;
+      --bg-color: #edf3f7;
       --card-bg: #ffffff;
+      --soft-blue: #eaf4fb;
+      --soft-green: #edf8f0;
+      --border-color: #d5e0e8;
     }
 
     * {
@@ -22,19 +25,20 @@
 
     body {
       margin: 0;
-      padding: 20px;
-      background-color: var(--bg-color);
-      color: #333;
+      padding: 28px;
+      background: linear-gradient(135deg, #edf3f7 0%, #f8fbfc 55%, #eaf4f0 100%);
+      color: #243746;
     }
 
     header {
       text-align: center;
-      margin-bottom: 25px;
-      padding: 15px;
+      margin: 0 auto 28px;
+      max-width: 1240px;
+      padding: 24px;
       background-color: var(--primary-color);
       color: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(23, 50, 77, 0.14);
     }
 
     header h1 {
@@ -43,9 +47,11 @@
     }
 
     .main-grid {
+      max-width: 1240px;
+      margin: 0 auto;
       display: grid;
       grid-template-columns: 1fr 1.5fr;
-      gap: 20px;
+      gap: 24px;
     }
 
     @media (max-width: 900px) {
@@ -56,16 +62,17 @@
 
     .card {
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      margin-bottom: 20px;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 22px rgba(23, 50, 77, 0.07);
+      margin-bottom: 24px;
     }
 
     .card h2 {
       margin-top: 0;
       font-size: 1.5rem;
-      border-bottom: 2px solid var(--bg-color);
+      border-bottom: 2px solid var(--border-color);
       padding-bottom: 10px;
       color: var(--primary-color);
     }
@@ -93,7 +100,7 @@
     .time-display {
       margin: 0 0 18px;
       padding: 12px 16px;
-      background: #eef6ff;
+      background: var(--soft-blue);
       border: 2px solid #b9d9f7;
       border-radius: 10px;
       color: var(--primary-color);
@@ -121,7 +128,7 @@
       padding: 14px;
       margin: 8px 0 16px;
       font-size: 1.25rem;
-      border: 3px solid #b8c2cc;
+      border: 2px solid #b8c2cc;
       border-radius: 8px;
     }
 
@@ -142,7 +149,7 @@
     .student-status-list {
       margin-top: 22px;
       padding-top: 16px;
-      border-top: 2px solid #e5e7eb;
+      border-top: 2px solid var(--border-color);
       text-align: left;
       font-size: 1.05rem;
     }
@@ -164,52 +171,6 @@
 
     .student-status-row .out {
       color: #721c24;
-    }
-
-    .hours-calculator {
-      margin-top: 18px;
-      padding-top: 15px;
-      border-top: 2px solid var(--bg-color);
-      text-align: left;
-    }
-
-    .hours-calculator h3 {
-      margin: 0 0 10px;
-      color: var(--primary-color);
-    }
-
-    .time-inputs {
-      display: flex;
-      gap: 10px;
-      align-items: end;
-    }
-
-    .time-input-group {
-      flex: 1;
-    }
-
-    .time-input-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    .time-input-group input {
-      width: 100%;
-      min-height: 48px;
-      padding: 8px;
-      font-size: 1.1rem;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-    }
-
-    .hours-result {
-      margin-top: 12px;
-      padding: 10px;
-      background: #eaf5fc;
-      border-radius: 8px;
-      font-weight: bold;
-      text-align: center;
     }
 
     .order-preview {
@@ -368,11 +329,48 @@
     /* Coffee Tracker Styles */
     .ticket-card {
       background: #fff;
-      border: 2px solid #e0e0e0;
+      border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 10px rgba(23, 50, 77, 0.06);
+    }
+
+    .order-section-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 28px 0 12px;
+      color: var(--primary-color);
+    }
+
+    .order-section-title h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .order-section-title span {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .archived-orders {
+      padding-top: 8px;
+      border-top: 2px solid var(--border-color);
+    }
+
+    .archived-orders .ticket-card {
+      background: #f8fafb;
+      box-shadow: none;
+    }
+
+    .archived-orders .ticket-stage {
+      color: var(--success-color);
+    }
+
+    .archived-orders .ticket-actions {
+      margin-top: 10px;
     }
 
     .ticket-header {
@@ -535,6 +533,16 @@
       border-radius: 6px;
     }
 
+    .btn-archive {
+      background: var(--success-color);
+      color: white;
+    }
+
+    .btn-restore {
+      background: #dbeaf4;
+      color: var(--primary-color);
+    }
+
     @media (max-width: 600px) {
       body {
         padding: 10px;
@@ -542,6 +550,10 @@
 
       .card {
         padding: 15px;
+      }
+
+      body {
+        padding: 12px;
       }
 
       .ticket-header {
@@ -567,31 +579,15 @@
         <h2>⏱️ Clock In or Clock Out</h2>
         <p class="clock-intro">Use your name, then choose one button.</p>
         <div class="time-display" id="currentTime">00:00:00 AM</div>
-        <label class="student-name-label" for="studentName">1. Your name</label>
+        <label class="student-name-label" for="studentName">Your name</label>
         <input class="student-name-input" type="text" id="studentName" placeholder="Type your first and last name" autocomplete="name">
         <div class="clock-buttons">
-          <button class="btn btn-clock-in" onclick="clockIn()">2. CLOCK IN</button>
-          <button class="btn btn-clock-out" onclick="clockOut()">2. CLOCK OUT</button>
+          <button class="btn btn-clock-in" onclick="clockIn()">CLOCK IN</button>
+          <button class="btn btn-clock-out" onclick="clockOut()">CLOCK OUT</button>
         </div>
         <div id="statusBadge" class="status-badge out" role="status" aria-live="polite">Your work status will appear here</div>
         <div class="student-status-list" id="studentStatusList">
           <strong>Work Status</strong>
-        </div>
-        <div class="hours-calculator">
-          <h3>Your Hours</h3>
-          <p class="local-note">Your total time appears after you end work.</p>
-          <div class="time-inputs">
-            <div class="time-input-group">
-              <label for="hoursStart">Start time</label>
-              <input type="time" id="hoursStart">
-            </div>
-            <div class="time-input-group">
-              <label for="hoursEnd">End time</label>
-              <input type="time" id="hoursEnd">
-            </div>
-          </div>
-          <button class="btn btn-add" type="button" onclick="calculateHours()">Update Hours</button>
-          <div class="hours-result" id="hoursResult" role="status" aria-live="polite">Enter a start and end time</div>
         </div>
         <div class="time-log" id="timeLog" aria-live="polite">
           <strong>Work History:</strong><br>
@@ -602,7 +598,7 @@
       <div class="card">
         <h2>📝 How to Order</h2>
         <div class="local-info" role="note">
-          1. Type the customer name. 2. Choose a drink. 3. Check your order. 4. Create the ticket. Soda orders always include a small snack.
+          Type the customer name, choose a drink, check the order, and create the ticket. Soda orders always include a small snack.
         </div>
       </div>
     </div>
@@ -633,8 +629,20 @@
         </div>
 
         <!-- Dynamic Tickets Container -->
+        <div class="order-section-title">
+          <h3>Active Orders</h3>
+          <span>Orders being prepared</span>
+        </div>
         <div id="ticketsContainer">
           <!-- Active orders will appear here -->
+        </div>
+
+        <div class="order-section-title">
+          <h3>Archived Orders</h3>
+          <span>Completed orders</span>
+        </div>
+        <div class="archived-orders" id="archivedOrdersContainer">
+          <!-- Archived orders will appear here -->
         </div>
       </div>
     </div>
@@ -654,7 +662,8 @@
     const storageKeys = {
       students: 'studentWorkCenter.students',
       shiftLog: 'studentWorkCenter.shiftLog',
-      orders: 'studentWorkCenter.orders'
+      orders: 'studentWorkCenter.orders',
+      archivedOrders: 'studentWorkCenter.archivedOrders'
     };
 
     function loadLocalData(key, fallback) {
@@ -704,12 +713,6 @@
       return `${hours} hr ${minutes} min`;
     }
 
-    function setTimeInput(id, date) {
-      const hours = String(date.getHours()).padStart(2, '0');
-      const minutes = String(date.getMinutes()).padStart(2, '0');
-      document.getElementById(id).value = `${hours}:${minutes}`;
-    }
-
     function clockIn() {
       const name = getStudentName();
       if (!name) {
@@ -720,9 +723,6 @@
 
       if (!students[name] || !students[name].clockedIn) {
         students[name] = { clockedIn: true, clockInAt: Date.now(), workedMinutes: 0 };
-        setTimeInput('hoursStart', new Date());
-        document.getElementById('hoursEnd').value = '';
-        document.getElementById('hoursResult').textContent = 'Clocked in. Clock out to calculate hours.';
         const time = new Date().toLocaleTimeString();
         showStatus(`${name}: Clocked In`, true);
         addLog(`${name} clocked IN at ${time}`);
@@ -742,13 +742,11 @@
       if (students[name] && students[name].clockedIn) {
         students[name].workedMinutes = getWorkedMinutes(students[name]);
         students[name].clockedIn = false;
-        setTimeInput('hoursEnd', new Date());
         const time = new Date().toLocaleTimeString();
         showStatus(`${name}: Clocked Out`);
         addLog(`${name} clocked OUT at ${time}`);
         saveLocalData(storageKeys.students, students);
         renderStudentStatuses();
-        calculateHours();
       } else {
         showStatus(`${name} is not clocked in`);
       }
@@ -790,25 +788,6 @@
       });
     }
 
-    function calculateHours() {
-      const start = document.getElementById('hoursStart').value;
-      const end = document.getElementById('hoursEnd').value;
-      const result = document.getElementById('hoursResult');
-
-      if (!start || !end) {
-        result.textContent = 'Enter both times';
-        return;
-      }
-
-      const [startHours, startMinutes] = start.split(':').map(Number);
-      const [endHours, endMinutes] = end.split(':').map(Number);
-      const startTotal = (startHours * 60) + startMinutes;
-      let endTotal = (endHours * 60) + endMinutes;
-
-      if (endTotal < startTotal) endTotal += 24 * 60;
-      result.textContent = `Hours worked: ${formatDuration(endTotal - startTotal)}`;
-    }
-
     // --- Domino's Pizza-Style Order Tracker System ---
     let orders = loadLocalData(storageKeys.orders, [
       {
@@ -819,6 +798,7 @@
         stage: 1
       }
     ]);
+    let archivedOrders = loadLocalData(storageKeys.archivedOrders, []);
 
     const stages = [
       "Order Received",
@@ -895,9 +875,28 @@
       }
     }
 
-    function removeTicket(orderId) {
+    function archiveOrder(orderId) {
+      const order = orders.find(o => o.id === orderId);
+      if (!order) return;
+
+      order.archivedAt = new Date().toLocaleString();
+      archivedOrders.unshift(order);
       orders = orders.filter(o => o.id !== orderId);
       saveLocalData(storageKeys.orders, orders);
+      saveLocalData(storageKeys.archivedOrders, archivedOrders);
+      renderTickets();
+    }
+
+    function restoreOrder(orderId) {
+      const order = archivedOrders.find(o => o.id === orderId);
+      if (!order) return;
+
+      delete order.archivedAt;
+      order.stage = 0;
+      orders.unshift(order);
+      archivedOrders = archivedOrders.filter(o => o.id !== orderId);
+      saveLocalData(storageKeys.orders, orders);
+      saveLocalData(storageKeys.archivedOrders, archivedOrders);
       renderTickets();
     }
 
@@ -913,10 +912,8 @@
 
       if (orders.length === 0) {
         container.innerHTML = `<p style="text-align:center; color:#888;">No active orders right now.</p>`;
-        return;
-      }
-
-      orders.forEach(order => {
+      } else {
+        orders.forEach(order => {
         const progressPercent = (order.stage / (stages.length - 1)) * 100;
         const customerName = escapeHtml(order.customerName || order.studentName || 'Name not provided');
         const drink = escapeHtml(order.drink || order.details || 'See order details');
@@ -971,8 +968,50 @@
           <div class="ticket-actions">
             ${order.stage < stages.length - 1 
               ? `<button class="btn btn-action btn-add" onclick="advanceStage(${order.id})">➡️ Next Step: ${stages[order.stage + 1]}</button>`
-              : `<button class="btn btn-action btn-clock-in" onclick="removeTicket(${order.id})">✅ Complete & Archive Ticket</button>`
+              : `<button class="btn btn-action btn-archive" onclick="archiveOrder(${order.id})">✅ Archive Order</button>`
             }
+          </div>
+        `;
+          container.appendChild(ticketCard);
+        });
+      }
+
+      renderArchivedOrders();
+    }
+
+    function renderArchivedOrders() {
+      const container = document.getElementById('archivedOrdersContainer');
+      container.innerHTML = '';
+
+      if (archivedOrders.length === 0) {
+        container.innerHTML = '<p style="color:#64748b;">Completed orders will appear here.</p>';
+        return;
+      }
+
+      archivedOrders.forEach(order => {
+        const customerName = escapeHtml(order.customerName || order.studentName || 'Name not provided');
+        const drink = escapeHtml(order.drink || order.details || 'See order details');
+        const snack = escapeHtml(order.snack || '');
+        const archivedAt = escapeHtml(order.archivedAt || 'Completed');
+        const ticketCard = document.createElement('div');
+        ticketCard.className = 'ticket-card';
+        ticketCard.innerHTML = `
+          <div class="ticket-header">
+            <div>
+              <div class="ticket-title">Ticket #${order.id}</div>
+              <div class="ticket-stage">Completed ${archivedAt}</div>
+            </div>
+          </div>
+          <div class="order-for">
+            <span class="order-label">Customer:</span>
+            <strong>${customerName}</strong>
+          </div>
+          <div class="order-items">
+            <div class="order-item"><span>Drink</span><strong>${drink}</strong></div>
+            ${snack ? `<div class="order-item"><span>Snack</span><strong>${snack}</strong></div>` : ''}
+          </div>
+          <div class="ticket-actions">
+            <button class="btn btn-action btn-restore" onclick="restoreOrder(${order.id})">Restore Order</button>
           </div>
         `;
         container.appendChild(ticketCard);
