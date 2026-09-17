@@ -72,30 +72,56 @@
 
     /* Clock-In / Clock-Out Styles */
     .clock-container {
-      text-align: center;
+      text-align: left;
+      border-top: 8px solid var(--accent-color);
+    }
+
+    .clock-container h2 {
+      font-size: 1.7rem;
+      border-bottom: 0;
+      padding-bottom: 0;
+      margin-bottom: 6px;
+    }
+
+    .clock-intro {
+      margin: 0 0 18px;
+      color: #4b5563;
+      font-size: 1.1rem;
+      line-height: 1.45;
     }
 
     .time-display {
-      font-size: 2rem;
-      font-weight: bold;
-      margin: 15px 0;
+      margin: 0 0 18px;
+      padding: 12px 16px;
+      background: #eef6ff;
+      border: 2px solid #b9d9f7;
+      border-radius: 10px;
       color: var(--primary-color);
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-align: center;
     }
 
     .clock-buttons {
       display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      justify-content: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .clock-buttons .btn {
+      flex: 1;
+      min-height: 72px;
+      font-size: 1.25rem;
+      letter-spacing: 0.02em;
     }
 
     .student-name-input {
       width: 100%;
-      min-height: 52px;
-      padding: 12px;
-      margin: 10px 0 15px;
-      font-size: 1.15rem;
-      border: 2px solid #ccc;
+      min-height: 60px;
+      padding: 14px;
+      margin: 8px 0 16px;
+      font-size: 1.25rem;
+      border: 3px solid #b8c2cc;
       border-radius: 8px;
     }
 
@@ -103,6 +129,7 @@
       display: block;
       text-align: left;
       font-weight: bold;
+      font-size: 1.1rem;
       color: var(--primary-color);
     }
 
@@ -113,18 +140,21 @@
     }
 
     .student-status-list {
-      margin-top: 15px;
+      margin-top: 22px;
+      padding-top: 16px;
+      border-top: 2px solid #e5e7eb;
       text-align: left;
+      font-size: 1.05rem;
     }
 
     .student-status-row {
       display: flex;
       justify-content: space-between;
       gap: 10px;
-      padding: 8px 10px;
+      padding: 10px 12px;
       margin-top: 6px;
       border-radius: 6px;
-      background: #f9f9f9;
+      background: #f3f6f8;
     }
 
     .student-status-row .in {
@@ -235,13 +265,15 @@
     }
 
     .status-badge {
-      display: inline-block;
-      margin-top: 15px;
-      padding: 8px 16px;
-      border-radius: 20px;
+      display: block;
+      min-height: 56px;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 10px;
       font-weight: bold;
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       background-color: #e0e0e0;
+      text-align: center;
     }
 
     .status-badge.in {
@@ -532,21 +564,22 @@
     <div>
       <!-- Time Clock Module -->
       <div class="card clock-container">
-        <h2>⏱️ Student Clock In / Out</h2>
+        <h2>⏱️ Clock In or Clock Out</h2>
+        <p class="clock-intro">Use your name, then choose one button.</p>
         <div class="time-display" id="currentTime">00:00:00 AM</div>
-        <label class="student-name-label" for="studentName">Student name</label>
-        <input class="student-name-input" type="text" id="studentName" placeholder="Type your name" autocomplete="name">
+        <label class="student-name-label" for="studentName">1. Your name</label>
+        <input class="student-name-input" type="text" id="studentName" placeholder="Type your first and last name" autocomplete="name">
         <div class="clock-buttons">
-          <button class="btn btn-clock-in" onclick="clockIn()">CLOCK IN</button>
-          <button class="btn btn-clock-out" onclick="clockOut()">CLOCK OUT</button>
+          <button class="btn btn-clock-in" onclick="clockIn()">2. CLOCK IN</button>
+          <button class="btn btn-clock-out" onclick="clockOut()">2. CLOCK OUT</button>
         </div>
-        <div id="statusBadge" class="status-badge out" role="status" aria-live="polite">Enter a name to clock in or out</div>
+        <div id="statusBadge" class="status-badge out" role="status" aria-live="polite">Your work status will appear here</div>
         <div class="student-status-list" id="studentStatusList">
-          <strong>Student Status:</strong>
+          <strong>Work Status</strong>
         </div>
         <div class="hours-calculator">
-          <h3>Hours Worked</h3>
-          <p class="local-note">Clock in. Clock out. Your total time appears here.</p>
+          <h3>Your Hours</h3>
+          <p class="local-note">Your total time appears after you end work.</p>
           <div class="time-inputs">
             <div class="time-input-group">
               <label for="hoursStart">Start time</label>
@@ -561,7 +594,7 @@
           <div class="hours-result" id="hoursResult" role="status" aria-live="polite">Enter a start and end time</div>
         </div>
         <div class="time-log" id="timeLog" aria-live="polite">
-          <strong>Shift Log:</strong><br>
+          <strong>Work History:</strong><br>
         </div>
       </div>
 
@@ -729,7 +762,7 @@
 
     function renderShiftLog() {
       const log = document.getElementById('timeLog');
-      log.innerHTML = '<strong>Shift Log:</strong><br>';
+      log.innerHTML = '<strong>Work History:</strong><br>';
       shiftLog.forEach(message => {
         const entry = document.createElement('div');
         entry.textContent = message;
@@ -740,7 +773,7 @@
 
     function renderStudentStatuses() {
       const container = document.getElementById('studentStatusList');
-      container.innerHTML = '<strong>Student Status:</strong>';
+      container.innerHTML = '<strong>Work Status</strong>';
 
       Object.entries(students).forEach(([name, student]) => {
         const row = document.createElement('div');
