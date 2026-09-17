@@ -525,6 +525,7 @@
         </div>
         <div class="hours-calculator">
           <h3>Hours Worked</h3>
+          <p class="local-note">Clock in and clock out to fill these times automatically.</p>
           <div class="time-inputs">
             <div class="time-input-group">
               <label for="hoursStart">Start time</label>
@@ -535,7 +536,7 @@
               <input type="time" id="hoursEnd">
             </div>
           </div>
-          <button class="btn btn-add" type="button" onclick="calculateHours()">Calculate Hours</button>
+          <button class="btn btn-add" type="button" onclick="calculateHours()">Update Hours</button>
           <div class="hours-result" id="hoursResult" role="status" aria-live="polite">Enter a start and end time</div>
         </div>
         <div class="time-log" id="timeLog" aria-live="polite">
@@ -559,8 +560,8 @@
         
         <!-- Button-based ticket builder -->
         <div class="quick-add">
-          <label class="student-name-label" for="orderStudentName">Name of student ordering</label>
-          <input class="order-student-name" type="text" id="orderStudentName" placeholder="Type the student's name" autocomplete="name">
+          <label class="student-name-label" for="orderCustomerName">Customer name</label>
+          <input class="order-student-name" type="text" id="orderCustomerName" placeholder="Type the customer's name" autocomplete="name">
           <div class="option-group">
             <span class="option-label" id="drink-options-label">Drink</span>
             <button type="button" class="option-button selected" aria-pressed="true" data-group="drink" data-value="Latte" onclick="selectOrderOption(this)">Latte</button>
@@ -630,8 +631,8 @@
       return document.getElementById('studentName').value.trim();
     }
 
-    function getOrderStudentName() {
-      return document.getElementById('orderStudentName').value.trim() || getStudentName();
+    function getOrderCustomerName() {
+      return document.getElementById('orderCustomerName').value.trim();
     }
 
     function showStatus(message, isIn = false) {
@@ -653,6 +654,12 @@
       return `${hours} hr ${minutes} min`;
     }
 
+    function setTimeInput(id, date) {
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      document.getElementById(id).value = `${hours}:${minutes}`;
+    }
+
     function clockIn() {
       const name = getStudentName();
       if (!name) {
@@ -663,6 +670,9 @@
 
       if (!students[name] || !students[name].clockedIn) {
         students[name] = { clockedIn: true, clockInAt: Date.now(), workedMinutes: 0 };
+        setTimeInput('hoursStart', new Date());
+        document.getElementById('hoursEnd').value = '';
+        document.getElementById('hoursResult').textContent = 'Clocked in. Clock out to calculate hours.';
         const time = new Date().toLocaleTimeString();
         showStatus(`${name}: Clocked In`, true);
         addLog(`${name} clocked IN at ${time}`);
@@ -682,11 +692,13 @@
       if (students[name] && students[name].clockedIn) {
         students[name].workedMinutes = getWorkedMinutes(students[name]);
         students[name].clockedIn = false;
+        setTimeInput('hoursEnd', new Date());
         const time = new Date().toLocaleTimeString();
         showStatus(`${name}: Clocked Out`);
         addLog(`${name} clocked OUT at ${time}`);
         saveLocalData(storageKeys.students, students);
         renderStudentStatuses();
+        calculateHours();
       } else {
         showStatus(`${name} is not clocked in`);
       }
@@ -751,7 +763,7 @@
     let orders = loadLocalData(storageKeys.orders, [
       {
         id: 101,
-        studentName: 'Mr. Smith',
+        customerName: 'Mr. Smith',
         drink: 'Large Vanilla Latte',
         coffee: 'Caffeinated',
         syrup: 'No extra syrup',
@@ -783,16 +795,16 @@
     }
 
     function createTicket() {
-      const studentName = getOrderStudentName();
-      if (!studentName) {
-        showStatus('Enter the ordering student name first');
-        document.getElementById('orderStudentName').focus();
+      const customerName = getOrderCustomerName();
+      if (!customerName) {
+        showStatus('Enter the customer name first');
+        document.getElementById('orderCustomerName').focus();
         return;
       }
 
       const newOrder = {
         id: Date.now(),
-        studentName,
+        customerName,
         drink: selectedOrderOptions.drink,
         coffee: selectedOrderOptions.coffee,
         syrup: selectedOrderOptions.syrup,
@@ -836,7 +848,7 @@
 
       orders.forEach(order => {
         const progressPercent = (order.stage / (stages.length - 1)) * 100;
-        const studentName = escapeHtml(order.studentName || 'Name not provided');
+        const customerName = escapeHtml(order.customerName || order.studentName || 'Name not provided');
         const drink = escapeHtml(order.drink || order.details || 'See order details');
         const coffee = escapeHtml(order.coffee || 'Not specified');
         const syrup = escapeHtml(order.syrup || 'Not specified');
@@ -861,8 +873,8 @@
           </div>
 
           <div class="order-for">
-            <span class="order-label">Student ordering:</span>
-            <strong>${studentName}</strong>
+            <span class="order-label">Customer:</span>
+            <strong>${customerName}</strong>
           </div>
 
           <div class="order-items-title">Items ordered</div>
