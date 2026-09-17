@@ -446,12 +446,48 @@
 
     /* Coffee Tracker Styles */
     .ticket-card {
-      background: #fff;
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      background: #fffef9;
+      border: 1px solid #d9d4c5;
+      border-radius: 6px;
+      padding: 0 16px 16px;
       margin-bottom: 16px;
-      box-shadow: 0 3px 10px rgba(23, 50, 77, 0.06);
+      box-shadow: 0 4px 12px rgba(80, 68, 40, 0.08);
+    }
+
+    #ticketsContainer {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 14px;
+      align-items: start;
+    }
+
+    #ticketsContainer > p {
+      grid-column: 1 / -1;
+      margin: 8px 0 16px;
+      padding: 20px;
+      border: 1px dashed #c7c1af;
+      border-radius: 6px;
+      background: #fffef9;
+    }
+
+    .ticket-card::before,
+    .ticket-card::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: repeating-linear-gradient(135deg, #d9d4c5 0 5px, transparent 5px 10px);
+    }
+
+    .ticket-card::before {
+      top: 0;
+    }
+
+    .ticket-card::after {
+      bottom: 0;
     }
 
     .order-section-title {
@@ -495,20 +531,38 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin: 5px -16px 14px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px dashed #c7c1af;
+      background: #f5f0e3;
     }
 
     .ticket-title {
-      font-size: 1.3rem;
+      font-size: 1.5rem;
       font-weight: bold;
       color: var(--primary-color);
+    }
+
+    .ticket-number-label {
+      display: block;
+      color: #756c58;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .ticket-time {
+      color: #756c58;
+      font-size: 0.8rem;
+      text-align: right;
     }
 
     .ticket-stage {
       display: inline-block;
       margin-top: 5px;
       color: var(--accent-color);
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: bold;
     }
 
@@ -517,12 +571,10 @@
       flex-wrap: wrap;
       gap: 8px;
       align-items: baseline;
-      margin-bottom: 12px;
-      padding: 12px;
-      background: #fff7d6;
-      border-left: 6px solid var(--warning-color);
-      border-radius: 6px;
-      font-size: 1.2rem;
+      margin-bottom: 14px;
+      padding: 10px 0;
+      border-bottom: 1px solid #ebe5d6;
+      font-size: 1.15rem;
     }
 
     .order-label {
@@ -533,9 +585,11 @@
     }
 
     .order-items-title {
-      margin: 12px 0 8px;
-      color: var(--primary-color);
-      font-size: 1rem;
+      margin: 12px 0 6px;
+      color: #756c58;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
@@ -549,19 +603,18 @@
       display: flex;
       justify-content: space-between;
       gap: 12px;
-      padding: 10px 12px;
-      background: #f4f7f6;
-      border-radius: 6px;
-      font-size: 1.1rem;
+      padding: 8px 0;
+      border-bottom: 1px dotted #d9d4c5;
+      font-size: 1rem;
     }
 
     .order-item span {
-      color: #555;
+      color: #756c58;
       font-weight: bold;
     }
 
     .order-item strong {
-      color: #222;
+      color: #243746;
       text-align: right;
     }
 
@@ -570,7 +623,7 @@
       display: flex;
       justify-content: space-between;
       position: relative;
-      margin: 20px 0;
+      margin: 16px 0 8px;
     }
 
     .tracker-bar::before {
@@ -602,13 +655,13 @@
       background: white;
       border: 3px solid #e0e0e0;
       border-radius: 50%;
-      width: 36px;
-      height: 36px;
+      width: 30px;
+      height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 0.9rem;
+      font-size: 0.75rem;
       color: #777;
     }
 
@@ -628,7 +681,7 @@
       display: flex;
       justify-content: space-between;
       text-align: center;
-      font-size: 0.85rem;
+      font-size: 0.7rem;
       font-weight: bold;
       color: #555;
       margin-top: 5px;
@@ -641,13 +694,14 @@
     .ticket-actions {
       display: flex;
       gap: 10px;
-      margin-top: 15px;
+      margin-top: 14px;
     }
 
     .btn-action {
       flex: 1;
-      padding: 10px;
-      font-size: 0.95rem;
+      min-height: 44px;
+      padding: 8px 10px;
+      font-size: 0.9rem;
       border-radius: 6px;
     }
 
@@ -1019,6 +1073,7 @@
         customerName,
         drink: selectedOrderOptions.drink,
         snack: selectedOrderOptions.drink === 'Soda' ? 'Small snack' : '',
+        createdAt: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
         stage: 0
       };
 
@@ -1080,6 +1135,8 @@
         const customerName = escapeHtml(order.customerName || order.studentName || 'Name not provided');
         const drink = escapeHtml(order.drink || order.details || 'See order details');
         const snack = escapeHtml(order.snack || '');
+        const ticketNumber = String(order.id).slice(-4).padStart(4, '0');
+        const orderTime = escapeHtml(order.createdAt || 'Order time unavailable');
         const legacyDetails = order.coffee || order.syrup
           ? `<div class="order-item"><span>Details</span><strong>${escapeHtml([order.coffee, order.syrup].filter(Boolean).join(', '))}</strong></div>`
           : '';
@@ -1098,9 +1155,11 @@
         ticketCard.innerHTML = `
           <div class="ticket-header">
             <div>
-              <div class="ticket-title">Ticket #${order.id}</div>
+              <span class="ticket-number-label">Order ticket</span>
+              <div class="ticket-title">#${ticketNumber}</div>
               <div class="ticket-stage">${stages[order.stage]}</div>
             </div>
+            <div class="ticket-time">${orderTime}</div>
           </div>
 
           <div class="order-for">
@@ -1155,12 +1214,14 @@
         const drink = escapeHtml(order.drink || order.details || 'See order details');
         const snack = escapeHtml(order.snack || '');
         const archivedAt = escapeHtml(order.archivedAt || 'Completed');
+        const ticketNumber = String(order.id).slice(-4).padStart(4, '0');
         const ticketCard = document.createElement('div');
         ticketCard.className = 'ticket-card';
         ticketCard.innerHTML = `
           <div class="ticket-header">
             <div>
-              <div class="ticket-title">Ticket #${order.id}</div>
+              <span class="ticket-number-label">Archived ticket</span>
+              <div class="ticket-title">#${ticketNumber}</div>
               <div class="ticket-stage">Completed ${archivedAt}</div>
             </div>
           </div>
