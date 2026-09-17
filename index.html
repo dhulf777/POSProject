@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Work Center & Coffee Tracker</title>
+  <title>Student Work Center & Drink Order Tracker</title>
   <style>
     :root {
       --primary-color: #2c3e50;
@@ -523,7 +523,7 @@
 <body>
 
   <header>
-    <h1>☕ Student Work Station & Coffee Tracker</h1>
+    <h1>☕ Student Work Station & Drink Order Tracker</h1>
   </header>
 
   <div class="main-grid">
@@ -569,7 +569,7 @@
       <div class="card">
         <h2>📝 How to Order</h2>
         <div class="local-info" role="note">
-          1. Type the customer name. 2. Choose the drink. 3. Choose the coffee and syrup. 4. Check your order. 5. Create the ticket.
+          1. Type the customer name. 2. Choose a drink. 3. Check your order. 4. Create the ticket. Soda orders always include a small snack.
         </div>
       </div>
     </div>
@@ -577,7 +577,7 @@
     <!-- RIGHT COLUMN: Domino's Pizza Style Tracker -->
     <div>
       <div class="card">
-        <h2>🚚 Live Coffee Order Tracker</h2>
+        <h2>🚚 Live Order Tracker</h2>
         
         <!-- Button-based ticket builder -->
         <div class="quick-add">
@@ -585,24 +585,15 @@
           <input class="order-student-name" type="text" id="orderCustomerName" placeholder="Type the customer's name" autocomplete="name" oninput="updateOrderPreview()">
           <div class="option-group">
             <span class="option-label" id="drink-options-label">Drink</span>
-            <button type="button" class="option-button selected" aria-pressed="true" data-group="drink" data-value="Latte" onclick="selectOrderOption(this)">Latte</button>
-            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Americano" onclick="selectOrderOption(this)">Americano</button>
-            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Mocha" onclick="selectOrderOption(this)">Mocha</button>
-            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Hot Chocolate" onclick="selectOrderOption(this)">Hot Chocolate</button>
-          </div>
-          <div class="option-group">
-            <span class="option-label" id="coffee-options-label">Coffee</span>
-            <button type="button" class="option-button selected" aria-pressed="true" data-group="coffee" data-value="Caffeinated" onclick="selectOrderOption(this)">Caffeinated</button>
-            <button type="button" class="option-button" aria-pressed="false" data-group="coffee" data-value="Decaf" onclick="selectOrderOption(this)">Decaf</button>
-          </div>
-          <div class="option-group">
-            <span class="option-label" id="syrup-options-label">Syrup</span>
-            <button type="button" class="option-button selected" aria-pressed="true" data-group="syrup" data-value="No extra syrup" onclick="selectOrderOption(this)">No Extra Syrup</button>
-            <button type="button" class="option-button" aria-pressed="false" data-group="syrup" data-value="Extra syrup" onclick="selectOrderOption(this)">Extra Syrup</button>
+            <button type="button" class="option-button selected" aria-pressed="true" data-group="drink" data-value="Iced coffee" onclick="selectOrderOption(this)">Iced Coffee</button>
+            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Flavored hot coffee" onclick="selectOrderOption(this)">Flavored Hot Coffee</button>
+            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Black coffee" onclick="selectOrderOption(this)">Black Coffee</button>
+            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Green tea" onclick="selectOrderOption(this)">Green Tea</button>
+            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Soda" onclick="selectOrderOption(this)">Soda</button>
           </div>
           <div class="order-preview" id="orderPreview" role="status" aria-live="polite">
             <strong>Check your order</strong>
-            Customer name needed. Latte, Caffeinated, No extra syrup.
+            Customer name needed. Iced coffee.
           </div>
           <button class="btn btn-add" onclick="createTicket()">Create Ticket</button>
           <button class="btn btn-clear" type="button" onclick="resetOrder()">Clear Order</button>
@@ -790,9 +781,8 @@
       {
         id: 101,
         customerName: 'Mr. Smith',
-        drink: 'Large Vanilla Latte',
-        coffee: 'Caffeinated',
-        syrup: 'No extra syrup',
+        drink: 'Iced coffee',
+        snack: '',
         stage: 1
       }
     ]);
@@ -805,9 +795,7 @@
     ];
 
     const selectedOrderOptions = {
-      drink: 'Latte',
-      coffee: 'Caffeinated',
-      syrup: 'No extra syrup'
+      drink: 'Iced coffee'
     };
 
     function selectOrderOption(button) {
@@ -825,15 +813,12 @@
       const customerName = getOrderCustomerName();
       const preview = document.getElementById('orderPreview');
       preview.innerHTML = '<strong>Check your order</strong>';
-      preview.append(
-        `Customer: ${customerName || 'Name needed'} | ${selectedOrderOptions.drink} | ${selectedOrderOptions.coffee} | ${selectedOrderOptions.syrup}.`
-      );
+      const snack = selectedOrderOptions.drink === 'Soda' ? ' | Small snack included' : '';
+      preview.append(`Customer: ${customerName || 'Name needed'} | ${selectedOrderOptions.drink}${snack}.`);
     }
 
     function resetOrder() {
-      selectedOrderOptions.drink = 'Latte';
-      selectedOrderOptions.coffee = 'Caffeinated';
-      selectedOrderOptions.syrup = 'No extra syrup';
+      selectedOrderOptions.drink = 'Iced coffee';
       document.getElementById('orderCustomerName').value = '';
 
       Object.entries(selectedOrderOptions).forEach(([group, value]) => {
@@ -858,8 +843,7 @@
         id: Date.now(),
         customerName,
         drink: selectedOrderOptions.drink,
-        coffee: selectedOrderOptions.coffee,
-        syrup: selectedOrderOptions.syrup,
+        snack: selectedOrderOptions.drink === 'Soda' ? 'Small snack' : '',
         stage: 0
       };
 
@@ -903,8 +887,10 @@
         const progressPercent = (order.stage / (stages.length - 1)) * 100;
         const customerName = escapeHtml(order.customerName || order.studentName || 'Name not provided');
         const drink = escapeHtml(order.drink || order.details || 'See order details');
-        const coffee = escapeHtml(order.coffee || 'Not specified');
-        const syrup = escapeHtml(order.syrup || 'Not specified');
+        const snack = escapeHtml(order.snack || '');
+        const legacyDetails = order.coffee || order.syrup
+          ? `<div class="order-item"><span>Details</span><strong>${escapeHtml([order.coffee, order.syrup].filter(Boolean).join(', '))}</strong></div>`
+          : '';
         
         let stepsHTML = '';
         stages.forEach((stageName, index) => {
@@ -933,8 +919,8 @@
           <div class="order-items-title">Items ordered</div>
           <div class="order-items">
             <div class="order-item"><span>Drink</span><strong>${drink}</strong></div>
-            <div class="order-item"><span>Coffee</span><strong>${coffee}</strong></div>
-            <div class="order-item"><span>Syrup</span><strong>${syrup}</strong></div>
+            ${snack ? `<div class="order-item"><span>Snack</span><strong>${snack}</strong></div>` : ''}
+            ${legacyDetails}
           </div>
           
           <div class="tracker-bar">
