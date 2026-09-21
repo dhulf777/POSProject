@@ -406,6 +406,16 @@
       color: var(--primary-color);
     }
 
+    .option-group-block {
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .option-group-block .option-label {
+      font-size: 0.95rem;
+    }
+
     .option-button {
       min-height: 64px;
       padding: 12px 14px;
@@ -799,10 +809,11 @@
         <input class="student-name-input" type="text" id="studentName" placeholder="Type your first and last name" autocomplete="name">
         <span class="job-label">Your job</span>
         <div class="job-options" role="group" aria-label="Choose your job">
-          <button type="button" class="job-button" data-job="Cashier" aria-pressed="false" onclick="selectJobOption(this)">Cashier</button>
-          <button type="button" class="job-button" data-job="Barista" aria-pressed="false" onclick="selectJobOption(this)">Barista</button>
-          <button type="button" class="job-button" data-job="Delivery" aria-pressed="false" onclick="selectJobOption(this)">Delivery</button>
-          <button type="button" class="job-button" data-job="Cart Pusher" aria-pressed="false" onclick="selectJobOption(this)">Cart Pusher</button>
+          <button type="button" class="job-button" data-job="Barista" aria-pressed="false" onclick="selectJobOption(this)">☕ Barista</button>
+          <button type="button" class="job-button" data-job="Server" aria-pressed="false" onclick="selectJobOption(this)">🍽️ Server</button>
+          <button type="button" class="job-button" data-job="Greeter" aria-pressed="false" onclick="selectJobOption(this)">👋 Greeter</button>
+          <button type="button" class="job-button" data-job="Cashier" aria-pressed="false" onclick="selectJobOption(this)">💵 Cashier</button>
+          <button type="button" class="job-button" data-job="Custodian" aria-pressed="false" onclick="selectJobOption(this)">🧹 Custodian</button>
         </div>
         <div class="clock-buttons">
           <button class="btn btn-clock-in" onclick="clockIn()">CLOCK IN</button>
@@ -830,13 +841,46 @@
           <div class="pos-panel">
             <span class="pos-register-label">Barista register</span>
             <h3>Choose an item</h3>
-            <p class="pos-kicker">Select one drink.</p>
-            <div class="pos-menu" aria-label="Drink menu">
-            <button type="button" class="option-button selected" aria-pressed="true" data-group="drink" data-value="Iced coffee" onclick="selectOrderOption(this)">Iced Coffee</button>
-            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Flavored hot coffee" onclick="selectOrderOption(this)">Flavored Hot Coffee</button>
-            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Black coffee" onclick="selectOrderOption(this)">Black Coffee</button>
-            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Green tea" onclick="selectOrderOption(this)">Green Tea</button>
-            <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Soda" onclick="selectOrderOption(this)">Soda</button>
+            <p class="pos-kicker">Choose a drink and any included options.</p>
+            <div class="option-group-block">
+              <div class="option-label">☕ Coffee & tea</div>
+              <div class="pos-menu" aria-label="Coffee and tea menu">
+                <button type="button" class="option-button selected" aria-pressed="true" data-group="drink" data-value="Iced coffee" onclick="selectOrderOption(this)">Iced Coffee</button>
+                <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Flavored hot coffee" onclick="selectOrderOption(this)">Flavored Hot Coffee</button>
+                <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Black coffee" onclick="selectOrderOption(this)">Black Coffee</button>
+                <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Green tea" onclick="selectOrderOption(this)">🍵 Green Tea</button>
+              </div>
+            </div>
+            <div class="option-group-block">
+              <div class="option-label">🥤 Soda + snack</div>
+              <div class="pos-menu" aria-label="Soda menu">
+                <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Coke" onclick="selectOrderOption(this)">Coke</button>
+                <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Diet Coke" onclick="selectOrderOption(this)">Diet Coke</button>
+                <button type="button" class="option-button" aria-pressed="false" data-group="drink" data-value="Coke Zero" onclick="selectOrderOption(this)">Coke Zero</button>
+              </div>
+            </div>
+            <div class="option-group-block">
+              <div class="option-label">🥛 Cream</div>
+              <div class="pos-menu" aria-label="Cream options">
+                <button type="button" class="option-button" aria-pressed="false" data-group="cream" data-value="Cream" onclick="selectOrderOption(this)">Cream</button>
+                <button type="button" class="option-button selected" aria-pressed="true" data-group="cream" data-value="No Cream" onclick="selectOrderOption(this)">No Cream</button>
+              </div>
+            </div>
+            <div class="option-group-block">
+              <div class="option-label">🍮 Caramel</div>
+              <div class="pos-menu" aria-label="Caramel options">
+                <button type="button" class="option-button selected" aria-pressed="true" data-group="caramel" data-value="No Caramel" onclick="selectOrderOption(this)">No Caramel</button>
+                <button type="button" class="option-button" aria-pressed="false" data-group="caramel" data-value="Caramel" onclick="selectOrderOption(this)">Caramel</button>
+                <button type="button" class="option-button" aria-pressed="false" data-group="caramel" data-value="Sugar Free Caramel" onclick="selectOrderOption(this)">Sugar Free Caramel</button>
+              </div>
+            </div>
+            <div class="option-group-block">
+              <div class="option-label">🌼 Vanilla</div>
+              <div class="pos-menu" aria-label="Vanilla options">
+                <button type="button" class="option-button selected" aria-pressed="true" data-group="vanilla" data-value="No Vanilla" onclick="selectOrderOption(this)">No Vanilla</button>
+                <button type="button" class="option-button" aria-pressed="false" data-group="vanilla" data-value="Vanilla" onclick="selectOrderOption(this)">Vanilla</button>
+                <button type="button" class="option-button" aria-pressed="false" data-group="vanilla" data-value="Sugar Free Vanilla" onclick="selectOrderOption(this)">Sugar Free Vanilla</button>
+              </div>
             </div>
           </div>
 
@@ -1057,7 +1101,10 @@
     ];
 
     const selectedOrderOptions = {
-      drink: 'Iced coffee'
+      drink: 'Iced coffee',
+      cream: 'No Cream',
+      caramel: 'No Caramel',
+      vanilla: 'No Vanilla'
     };
 
     function selectOrderOption(button) {
@@ -1075,10 +1122,11 @@
       const customerName = getOrderCustomerName();
       const notes = getOrderNotes();
       const preview = document.getElementById('orderPreview');
-      const snack = selectedOrderOptions.drink === 'Soda' ? ' | Small snack included' : '';
+      const snack = ['Coke', 'Diet Coke', 'Coke Zero'].includes(selectedOrderOptions.drink) ? ' | Small snack included' : '';
       preview.innerHTML = `
         <div class="pos-order-line"><span>Drink</span><strong>${escapeHtml(selectedOrderOptions.drink)}</strong></div>
         ${snack ? '<div class="pos-order-line"><span>Included</span><strong>Small snack</strong></div>' : ''}
+        <div class="pos-order-line"><span>Options</span><strong>${escapeHtml([selectedOrderOptions.cream, selectedOrderOptions.caramel, selectedOrderOptions.vanilla].join(', '))}</strong></div>
         <div class="pos-order-line"><span>Customer</span><strong>${escapeHtml(customerName || 'Name needed')}</strong></div>
         ${notes ? `<div class="special-request"><strong>Special request:</strong> ${escapeHtml(notes)}</div>` : ''}
       `;
@@ -1086,6 +1134,9 @@
 
     function resetOrder() {
       selectedOrderOptions.drink = 'Iced coffee';
+      selectedOrderOptions.cream = 'No Cream';
+      selectedOrderOptions.caramel = 'No Caramel';
+      selectedOrderOptions.vanilla = 'No Vanilla';
       document.getElementById('orderCustomerName').value = '';
       document.getElementById('orderNotes').value = '';
 
@@ -1111,7 +1162,12 @@
         id: Date.now(),
         customerName,
         drink: selectedOrderOptions.drink,
-        snack: selectedOrderOptions.drink === 'Soda' ? 'Small snack' : '',
+        snack: ['Coke', 'Diet Coke', 'Coke Zero'].includes(selectedOrderOptions.drink) ? 'Small snack' : '',
+        options: {
+          cream: selectedOrderOptions.cream,
+          caramel: selectedOrderOptions.caramel,
+          vanilla: selectedOrderOptions.vanilla
+        },
         notes: getOrderNotes(),
         createdAt: new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }),
         stage: 0
@@ -1175,6 +1231,9 @@
         const customerName = escapeHtml(order.customerName || order.studentName || 'Name not provided');
         const drink = escapeHtml(order.drink || order.details || 'See order details');
         const snack = escapeHtml(order.snack || '');
+        const options = order.options
+          ? escapeHtml([order.options.cream, order.options.caramel, order.options.vanilla].filter(Boolean).join(', '))
+          : '';
         const notes = escapeHtml(order.notes || '');
         const ticketNumber = String(order.id).slice(-4).padStart(4, '0');
         const orderTime = escapeHtml(order.createdAt || 'Order time unavailable');
@@ -1212,6 +1271,7 @@
           <div class="order-items">
             <div class="order-item"><span>Drink</span><strong>${drink}</strong></div>
             ${snack ? `<div class="order-item"><span>Snack</span><strong>${snack}</strong></div>` : ''}
+            ${options ? `<div class="order-item"><span>Options</span><strong>${options}</strong></div>` : ''}
             ${legacyDetails}
             ${notes ? `<div class="special-request"><strong>Special request:</strong> ${notes}</div>` : ''}
           </div>
@@ -1255,6 +1315,9 @@
         const customerName = escapeHtml(order.customerName || order.studentName || 'Name not provided');
         const drink = escapeHtml(order.drink || order.details || 'See order details');
         const snack = escapeHtml(order.snack || '');
+        const options = order.options
+          ? escapeHtml([order.options.cream, order.options.caramel, order.options.vanilla].filter(Boolean).join(', '))
+          : '';
         const notes = escapeHtml(order.notes || '');
         const archivedAt = escapeHtml(order.archivedAt || 'Completed');
         const ticketNumber = String(order.id).slice(-4).padStart(4, '0');
@@ -1275,6 +1338,7 @@
           <div class="order-items">
             <div class="order-item"><span>Drink</span><strong>${drink}</strong></div>
             ${snack ? `<div class="order-item"><span>Snack</span><strong>${snack}</strong></div>` : ''}
+            ${options ? `<div class="order-item"><span>Options</span><strong>${options}</strong></div>` : ''}
             ${notes ? `<div class="special-request"><strong>Special request:</strong> ${notes}</div>` : ''}
           </div>
           <div class="ticket-actions">
