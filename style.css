@@ -48,6 +48,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .eyebrow { margin: 0 0 7px; color: var(--coffee); font-size: .74rem; font-weight: bold; letter-spacing: .16em; text-transform: uppercase; }
 .welcome-row h2 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.7rem); line-height: 1.05; }
 .welcome-row p:last-child { max-width: 490px; margin: 8px 0 0; color: var(--muted); font-size: 1rem; line-height: 1.5; }
+#fohQuote span { font-style: italic; }
 .date-chip { padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.65); color: var(--muted); font-size: .85rem; white-space: nowrap; }
 .dashboard { display: grid; grid-template-columns: minmax(280px, .78fr) minmax(0, 1.7fr); gap: 24px; align-items: start; }
 .stack { display: grid; gap: 24px; }
@@ -126,15 +127,14 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .ticket-items span { color: var(--muted); }
 .ticket-items strong { color: var(--ink); text-align: right; }
 .special-request { margin: 2px 0 0; padding: 9px; border-radius: 7px; background: #fff4d9; color: #72521a; font-size: .76rem; line-height: 1.4; }
-.tracker { display: flex; justify-content: space-between; position: relative; margin: 19px 0 8px; }
-.tracker::before, .tracker-progress { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 4px; transform: translateY(-50%); }
-.tracker::before { background: #e0e3dc; }
-.tracker-progress { right: auto; background: var(--sage-strong); transition: width .2s ease; }
-.tracker-step { z-index: 1; display: grid; place-items: center; width: 25px; height: 25px; border: 2px solid #d7dbd5; border-radius: 50%; background: #fffdf8; color: var(--muted); font-family: Arial, sans-serif; font-size: .66rem; font-weight: bold; }
-.tracker-step.active, .tracker-step.completed { border-color: var(--sage-strong); background: var(--sage-strong); color: white; }
-.tracker-step.completed { background: #78a784; }
-.step-labels { display: flex; justify-content: space-between; color: var(--muted); font-family: Arial, sans-serif; font-size: .62rem; }
-.step-labels span { width: 25%; text-align: center; }
+.tracker-meta, .tracker-labels { display: flex; justify-content: space-between; gap: 12px; font-family: Arial, sans-serif; }
+.tracker-meta { margin: 19px 0 7px; color: var(--muted); font-size: .72rem; }
+.tracker-meta strong { color: var(--ink); }
+.tracker { position: relative; height: 10px; margin: 0 0 7px; overflow: hidden; border-radius: 999px; background: #e0e3dc; }
+.tracker-progress { height: 100%; border-radius: inherit; background: #3c9b61; transition: width 1s linear, background .2s ease; }
+.tracker.warning .tracker-progress { background: #d49a2f; }
+.tracker.late .tracker-progress { background: #c95145; }
+.tracker-labels { color: var(--muted); font-size: .62rem; }
 .ticket-action { display: flex; margin-top: 14px; }
 .ticket-action .button { width: 100%; }
 .empty-state { display: grid; place-items: center; gap: 5px; min-height: 190px; grid-column: 1 / -1; border: 1px dashed #cbd5cc; border-radius: 12px; background: rgba(255,255,255,.5); color: var(--muted); font-family: Arial, sans-serif; text-align: center; }
@@ -143,6 +143,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .empty-state p { margin: 0; font-size: .82rem; }
 .archived { margin-top: 28px; padding-top: 4px; border-top: 1px solid var(--line); }
 .archived .ticket-card { background: #f5f7f3; box-shadow: none; }
+.site-footer { padding: 24px; border-top: 1px solid var(--line); background: var(--coffee-dark); color: #ddcbb6; font-family: Arial, sans-serif; font-size: .76rem; line-height: 1.5; text-align: center; }
 
 @media (max-width: 1050px) {
   .dashboard, .order-builder { grid-template-columns: 1fr; }
