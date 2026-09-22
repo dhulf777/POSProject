@@ -363,8 +363,8 @@ function endDay() {
     order.archivedAt = new Date(endTimestamp).toLocaleString();
     order.completedTimestamp = endTimestamp;
   });
-  archivedOrders = [...orders, ...archivedOrders];
   orders = [];
+  archivedOrders = [];
   shiftLog = [];
   saveLocalData(storageKeys.dailySummaries, dailySummaries);
   saveLocalData(storageKeys.orders, orders);
