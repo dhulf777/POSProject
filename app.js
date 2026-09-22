@@ -1,8 +1,10 @@
 const storageKeys = {
   students: 'studentWorkCenter.students',
   shiftLog: 'studentWorkCenter.shiftLog',
+  shiftEvents: 'studentWorkCenter.shiftEvents',
   orders: 'studentWorkCenter.orders',
-  archivedOrders: 'studentWorkCenter.archivedOrders'
+  archivedOrders: 'studentWorkCenter.archivedOrders',
+  dailySummaries: 'studentWorkCenter.dailySummaries'
 };
 
 const orderEstimateMs = 10 * 60 * 1000;
@@ -24,6 +26,8 @@ let fohQuoteIndex = Math.floor(Date.now() / fohQuoteRotationMs) % fohQuotes.leng
 let fohQuotePeriod = Math.floor(Date.now() / fohQuoteRotationMs);
 const students = loadLocalData(storageKeys.students, {});
 let shiftLog = loadLocalData(storageKeys.shiftLog, []);
+let shiftEvents = loadLocalData(storageKeys.shiftEvents, []);
+let dailySummaries = loadLocalData(storageKeys.dailySummaries, {});
 let selectedJob = '';
 let orders = loadLocalData(storageKeys.orders, []).filter(order => order.customerName !== 'Mr. Smith');
 let archivedOrders = loadLocalData(storageKeys.archivedOrders, []).filter(order => order.customerName !== 'Mr. Smith');
@@ -49,6 +53,20 @@ function saveLocalData(key, data) {
   } catch (error) {
     showStatus('This browser cannot save local data');
   }
+}
+
+function getDateKey(timestamp = Date.now()) {
+  const date = new Date(timestamp);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function formatDateKey(dateKey) {
+  return new Date(`${dateKey}T12:00:00`).toLocaleDateString([], {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+  });
 }
 
 function escapeHtml(value) {
@@ -142,6 +160,8 @@ function clockIn() {
   if (!requireClockDetails()) return;
   if (!students[name] || !students[name].clockedIn) {
     students[name] = { clockedIn: true, clockInAt: Date.now(), workedMinutes: 0, job: selectedJob };
+    shiftEvents.push({ type: 'in', name, job: selectedJob, timestamp: Date.now() });
+    saveLocalData(storageKeys.shiftEvents, shiftEvents);
     const time = new Date().toLocaleTimeString();
     showStatus(`${name}: Clocked In as ${selectedJob}`, true);
     addLog(`${name} (${selectedJob}) clocked IN at ${time}`);
@@ -160,6 +180,8 @@ function clockOut() {
     const clockedInRole = student.job || 'team member';
     student.workedMinutes = getWorkedMinutes(student);
     student.clockedIn = false;
+    shiftEvents.push({ type: 'out', name, job: clockedInRole, timestamp: Date.now() });
+    saveLocalData(storageKeys.shiftEvents, shiftEvents);
     const time = new Date().toLocaleTimeString();
     showStatus(`${name}: Clocked Out from ${clockedInRole}`);
     addLog(`${name} (${clockedInRole}) clocked OUT at ${time}`);
@@ -269,6 +291,103 @@ function createTicket() {
   resetOrder();
 }
 
+function getDailyOrders(dateKey) {
+  return [...orders, ...archivedOrders].filter(order => getDateKey(Number(order.createdTimestamp) || Number(order.id)) === dateKey);
+}
+
+function buildDailySummary(dateKey, endTimestamp = Date.now()) {
+  const dayEvents = shiftEvents
+    .filter(event => getDateKey(event.timestamp) === dateKey)
+    .sort((first, second) => first.timestamp - second.timestamp);
+  const people = {};
+
+  dayEvents.forEach(event => {
+    if (!people[event.name]) people[event.name] = { name: event.name, job: event.job || 'Team member', minutes: 0, clockIns: 0 };
+    if (event.type === 'in') {
+      people[event.name].clockIns += 1;
+      people[event.name].clockInAt = event.timestamp;
+    } else if (people[event.name].clockInAt) {
+      people[event.name].minutes += Math.max(0, Math.floor((event.timestamp - people[event.name].clockInAt) / 60000));
+      people[event.name].clockInAt = null;
+    }
+  });
+  Object.values(people).forEach(person => {
+    if (person.clockInAt) person.minutes += Math.max(0, Math.floor((endTimestamp - person.clockInAt) / 60000));
+    delete person.clockInAt;
+  });
+
+  const dayOrders = getDailyOrders(dateKey);
+  const drinkCounts = {};
+  let coffeeTeaOrders = 0;
+  let sodaOrders = 0;
+  let snackOrders = 0;
+  let totalPrepMinutes = 0;
+  dayOrders.forEach(order => {
+    const drink = order.drink || order.details || 'Unknown';
+    drinkCounts[drink] = (drinkCounts[drink] || 0) + 1;
+    if (['Coke', 'Diet Coke', 'Coke Zero'].includes(drink)) sodaOrders += 1;
+    else coffeeTeaOrders += 1;
+    if (order.snack) snackOrders += 1;
+    const completedAt = Number(order.completedTimestamp) || endTimestamp;
+    totalPrepMinutes += Math.max(0, (completedAt - (Number(order.createdTimestamp) || endTimestamp)) / 60000);
+  });
+  const peopleList = Object.values(people);
+  const totalMinutes = peopleList.reduce((sum, person) => sum + person.minutes, 0);
+  const topDrink = Object.entries(drinkCounts).sort((first, second) => second[1] - first[1])[0];
+
+  return {
+    date: dateKey,
+    savedAt: endTimestamp,
+    team: peopleList,
+    orders: {
+      total: dayOrders.length,
+      coffeeTea: coffeeTeaOrders,
+      soda: sodaOrders,
+      snacks: snackOrders,
+      uniqueCustomers: new Set(dayOrders.map(order => order.customerName).filter(Boolean)).size,
+      topDrink: topDrink ? `${topDrink[0]} (${topDrink[1]})` : 'None'
+    },
+    averages: {
+      shiftMinutes: peopleList.length ? Math.round(totalMinutes / peopleList.length) : 0,
+      ordersPerPerson: peopleList.length ? Math.round((dayOrders.length / peopleList.length) * 10) / 10 : 0,
+      prepMinutes: dayOrders.length ? Math.round((totalPrepMinutes / dayOrders.length) * 10) / 10 : 0
+    }
+  };
+}
+
+function endDay() {
+  const confirmation = window.prompt('This saves today\'s summary. Type END DAY to continue.');
+  if (confirmation !== 'END DAY') return;
+  const dateKey = getDateKey();
+  dailySummaries[dateKey] = buildDailySummary(dateKey);
+  saveLocalData(storageKeys.dailySummaries, dailySummaries);
+  renderDailySummary();
+}
+
+function renderDailySummary() {
+  const container = document.getElementById('dailySummary');
+  const dateKey = getDateKey();
+  const summary = dailySummaries[dateKey];
+  if (!summary) {
+    container.innerHTML = '<p class="empty-note">No end-of-day summary saved for today.</p>';
+    return;
+  }
+  const teamRows = summary.team.length
+    ? summary.team.map(person => `<div class="summary-row"><span>${escapeHtml(person.name)} <small>${escapeHtml(person.job)}</small></span><strong>${formatDuration(person.minutes)}</strong></div>`).join('')
+    : '<p class="empty-note">No clock-in data recorded.</p>';
+  container.innerHTML = `<div class="summary-date">${escapeHtml(formatDateKey(summary.date))}</div>
+    <div class="summary-grid">
+      <div><strong>${summary.orders.total}</strong><span>total orders</span></div>
+      <div><strong>${summary.orders.coffeeTea}</strong><span>coffee & tea</span></div>
+      <div><strong>${summary.orders.soda}</strong><span>soda orders</span></div>
+      <div><strong>${summary.orders.snacks}</strong><span>snacks</span></div>
+      <div><strong>${summary.orders.uniqueCustomers}</strong><span>customers</span></div>
+      <div><strong>${escapeHtml(summary.orders.topDrink)}</strong><span>most popular drink</span></div>
+    </div>
+    <div class="summary-averages"><strong>Averages</strong><span>${formatDuration(summary.averages.shiftMinutes)} per person</span><span>${summary.averages.ordersPerPerson} orders per person</span><span>${summary.averages.prepMinutes} min per order</span></div>
+    <div class="summary-team"><strong>Hours by person</strong>${teamRows}</div>`;
+}
+
 function advanceStage(orderId) {
   completeOrder(orderId);
 }
@@ -281,6 +400,7 @@ function archiveOrder(orderId) {
   const order = orders.find(item => item.id === orderId);
   if (!order) return;
   order.archivedAt = new Date().toLocaleString();
+  order.completedTimestamp = Date.now();
   archivedOrders.unshift(order);
   orders = orders.filter(item => item.id !== orderId);
   saveLocalData(storageKeys.orders, orders);
@@ -367,3 +487,4 @@ renderShiftLog();
 renderTickets();
 updateOrderPreview();
 setInterval(renderTickets, 1000);
+renderDailySummary();
