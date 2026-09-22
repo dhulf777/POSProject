@@ -32,6 +32,7 @@
     .welcome-row h2 { margin:0; font-size:clamp(1.8rem,3vw,2.7rem); line-height:1.05; }
     .welcome-row p:last-child { max-width:490px; margin:8px 0 0; color:var(--muted); font-size:1rem; line-height:1.5; }
     #fohQuote span { font-style:italic; }
+    .quote-rotate-button { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; border:0; clip:rect(0 0 0 0); white-space:nowrap; }
     .pos-panel { display:block !important; visibility:visible !important; }
     .site-footer { display:block !important; visibility:visible !important; width:100%; padding:24px; border-top:1px solid var(--line); background:var(--coffee-dark); color:#ddcbb6; font-family:Arial,sans-serif; font-size:.76rem; line-height:1.5; text-align:center; }
     .date-chip { padding:10px 14px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.65); color:var(--muted); font-size:.85rem; white-space:nowrap; }
@@ -152,7 +153,8 @@
         <div>
           <p class="eyebrow">Front of house</p>
           <h2 id="pageHeading">Good morning, team.</h2>
-          <p id="fohQuote">Today is never too late to be brand new. <span>— Innocent</span></p>
+          <button class="quote-rotate-button" id="rotateFohQuote" type="button" aria-label="Show the next quote" onclick="rotateFohQuote()">Rotate quote</button>
+          <p id="fohQuote">It's me, hi. <span>— "Anti-Hero," Midnights</span></p>
         </div>
         <div class="date-chip">Open service · Ready for orders</div>
       </section>
@@ -194,7 +196,7 @@
 
           <div class="order-builder">
             <section class="builder-section" aria-labelledby="menuHeading">
-              <span class="section-kicker">Barista register</span>
+              <span class="section-kicker">Back of house</span>
               <h4 id="menuHeading">Build the drink</h4>
               <p class="helper">Choose one drink, then add the requested options.</p>
 
