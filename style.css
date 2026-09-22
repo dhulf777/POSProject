@@ -49,6 +49,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .welcome-row h2 { margin: 0; font-size: clamp(1.8rem, 3vw, 2.7rem); line-height: 1.05; }
 .welcome-row p:last-child { max-width: 490px; margin: 8px 0 0; color: var(--muted); font-size: 1rem; line-height: 1.5; }
 #fohQuote span { font-style: italic; }
+.quote-rotate-button { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; border: 0; clip: rect(0 0 0 0); white-space: nowrap; }
 .date-chip { padding: 10px 14px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.65); color: var(--muted); font-size: .85rem; white-space: nowrap; }
 .dashboard { display: grid; grid-template-columns: minmax(280px, .78fr) minmax(0, 1.7fr); gap: 24px; align-items: start; }
 .stack { display: grid; gap: 24px; }
