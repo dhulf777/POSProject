@@ -152,6 +152,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .end-day-button { min-height: 34px; border: 1px solid #b7a895; border-radius: 7px; padding: 7px 11px; background: transparent; color: #59483d; font-family: Arial, sans-serif; font-size: .72rem; font-weight: bold; }
 .end-day-button:hover { background: #eee5d7; }
 .daily-summary { margin-top: 16px; }
+.summary-card + .summary-card { margin-top: 18px; padding-top: 18px; border-top: 1px solid #d9cdbb; }
 .summary-date { padding-bottom: 10px; border-bottom: 1px solid #d9cdbb; font-weight: bold; }
 .summary-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 12px; }
 .summary-grid div { display: grid; gap: 3px; padding: 10px; background: #fffdf8; border-radius: 7px; }
