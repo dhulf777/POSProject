@@ -35,6 +35,22 @@
     .quote-rotate-button { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; border:0; clip:rect(0 0 0 0); white-space:nowrap; }
     .pos-panel { display:block !important; visibility:visible !important; }
     .site-footer { display:block !important; visibility:visible !important; width:100%; padding:24px; border-top:1px solid var(--line); background:var(--coffee-dark); color:#ddcbb6; font-family:Arial,sans-serif; font-size:.76rem; line-height:1.5; text-align:center; }
+    .end-day-panel { width:min(1440px,calc(100% - 48px)); margin:0 auto 24px; padding:18px; border:1px solid #c8bda9; border-radius:12px; background:#f8f4eb; color:var(--ink); text-align:left; }
+    .end-day-header { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .end-day-header h3 { margin:0; font-family:Georgia,serif; font-size:1rem; }
+    .end-day-header p { margin:4px 0 0; color:#786f65; font-size:.75rem; }
+    .end-day-button { min-height:34px; border:1px solid #b7a895; border-radius:7px; padding:7px 11px; background:transparent; color:#59483d; font-family:Arial,sans-serif; font-size:.72rem; font-weight:bold; }
+    .end-day-button:hover { background:#eee5d7; }
+    .daily-summary { margin-top:16px; }
+    .summary-date { padding-bottom:10px; border-bottom:1px solid #d9cdbb; font-weight:bold; }
+    .summary-grid { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:12px; }
+    .summary-grid div { display:grid; gap:3px; padding:10px; background:#fffdf8; border-radius:7px; }
+    .summary-grid strong { font-size:1.05rem; }
+    .summary-grid span,.summary-averages,.summary-team { color:#786f65; font-family:Arial,sans-serif; font-size:.72rem; }
+    .summary-averages,.summary-team { display:grid; gap:7px; margin-top:14px; }
+    .summary-averages { grid-template-columns:repeat(4,auto); align-items:center; }
+    .summary-row { display:flex; justify-content:space-between; gap:12px; padding:7px 9px; background:#fffdf8; border-radius:6px; }
+    .summary-row small { color:#9a8d7f; }
     .date-chip { padding:10px 14px; border:1px solid var(--line); border-radius:999px; background:rgba(255,255,255,.65); color:var(--muted); font-size:.85rem; white-space:nowrap; }
     .dashboard { display:grid; grid-template-columns:minmax(280px,.78fr) minmax(0,1.7fr); gap:24px; align-items:start; }
     .stack { display:grid; gap:24px; }
@@ -264,6 +280,13 @@
         </section>
       </div>
     </main>
+    <section class="end-day-panel" aria-labelledby="endDayHeading">
+      <div class="end-day-header">
+        <div><h3 id="endDayHeading">End day</h3><p>Daily summary is saved locally in this browser.</p></div>
+        <button class="end-day-button" type="button" onclick="endDay()">End day</button>
+      </div>
+      <div class="daily-summary" id="dailySummary" aria-live="polite"></div>
+    </section>
     <footer class="site-footer">Made by University of Cincinnati students Olivia Scarlatella and Dhulfiqar Hasan for Felicity-Franklin's SOAR Program</footer>
   </div>
   <script src="./app.js?v=20260921-estimate" defer></script>
