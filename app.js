@@ -356,11 +356,22 @@ function buildDailySummary(dateKey, endTimestamp = Date.now()) {
 }
 
 function endDay() {
-  const confirmation = window.prompt('This saves today\'s summary. Type END DAY to continue.');
-  if (confirmation !== 'END DAY') return;
   const dateKey = getDateKey();
   dailySummaries[dateKey] = buildDailySummary(dateKey);
+  const endTimestamp = Date.now();
+  orders.forEach(order => {
+    order.archivedAt = new Date(endTimestamp).toLocaleString();
+    order.completedTimestamp = endTimestamp;
+  });
+  archivedOrders = [...orders, ...archivedOrders];
+  orders = [];
+  shiftLog = [];
   saveLocalData(storageKeys.dailySummaries, dailySummaries);
+  saveLocalData(storageKeys.orders, orders);
+  saveLocalData(storageKeys.archivedOrders, archivedOrders);
+  saveLocalData(storageKeys.shiftLog, shiftLog);
+  renderShiftLog();
+  renderTickets();
   renderDailySummary();
 }
 
