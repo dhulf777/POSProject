@@ -11,6 +11,7 @@ A lightweight front-of-house and back-of-house order dashboard for the SOAR Coff
 - Track active orders with a 10-minute preparation estimate
 - Mark orders complete and restore completed orders
 - Rotate front-of-house Taylor Swift quotes automatically or manually
+- Save an end-of-day summary with team hours, order counts, drink breakdowns, and averages
 - Save students, shift logs, orders, and completed orders in browser `localStorage`
 
 ## Run It
@@ -38,6 +39,8 @@ Then visit `http://localhost:8000`.
 ## Data Storage
 
 The app stores data locally in the current browser. Clearing browser site data will remove saved students, shift history, active orders, and completed orders.
+
+End-of-day summaries are also stored by local calendar date. The `End day` control is located at the bottom of the page and requires typing `END DAY` before saving a snapshot. Returning to the site in the same browser shows the saved summary for that date.
 
 ## Team Areas
 
