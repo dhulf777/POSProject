@@ -145,6 +145,22 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
 .archived { margin-top: 28px; padding-top: 4px; border-top: 1px solid var(--line); }
 .archived .ticket-card { background: #f5f7f3; box-shadow: none; }
 .site-footer { padding: 24px; border-top: 1px solid var(--line); background: var(--coffee-dark); color: #ddcbb6; font-family: Arial, sans-serif; font-size: .76rem; line-height: 1.5; text-align: center; }
+.end-day-panel { width: min(1440px, calc(100% - 48px)); margin: 0 auto 24px; padding: 18px; border: 1px solid #c8bda9; border-radius: 12px; background: #f8f4eb; color: var(--ink); }
+.end-day-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.end-day-header h3 { margin: 0; font-family: Georgia, serif; font-size: 1rem; }
+.end-day-header p { margin: 4px 0 0; color: #786f65; font-size: .75rem; }
+.end-day-button { min-height: 34px; border: 1px solid #b7a895; border-radius: 7px; padding: 7px 11px; background: transparent; color: #59483d; font-family: Arial, sans-serif; font-size: .72rem; font-weight: bold; }
+.end-day-button:hover { background: #eee5d7; }
+.daily-summary { margin-top: 16px; }
+.summary-date { padding-bottom: 10px; border-bottom: 1px solid #d9cdbb; font-weight: bold; }
+.summary-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-top: 12px; }
+.summary-grid div { display: grid; gap: 3px; padding: 10px; background: #fffdf8; border-radius: 7px; }
+.summary-grid strong { font-size: 1.05rem; }
+.summary-grid span, .summary-averages, .summary-team { color: #786f65; font-family: Arial, sans-serif; font-size: .72rem; }
+.summary-averages, .summary-team { display: grid; gap: 7px; margin-top: 14px; }
+.summary-averages { grid-template-columns: repeat(4, auto); align-items: center; }
+.summary-row { display: flex; justify-content: space-between; gap: 12px; padding: 7px 9px; background: #fffdf8; border-radius: 6px; }
+.summary-row small { color: #9a8d7f; }
 
 @media (max-width: 1050px) {
   .dashboard, .order-builder { grid-template-columns: 1fr; }
@@ -159,6 +175,9 @@ button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px
   .panel { padding: 18px; border-radius: 14px; }
   .job-options, .clock-actions, .option-menu { grid-template-columns: 1fr 1fr; }
   .orders-heading { align-items: start; flex-direction: column; gap: 5px; }
+  .end-day-panel { width: min(100% - 28px, 1440px); }
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  .summary-averages { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 410px) {
   .job-options, .clock-actions, .option-menu { grid-template-columns: 1fr; }
