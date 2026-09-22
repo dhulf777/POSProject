@@ -7,14 +7,21 @@ const storageKeys = {
 
 const orderEstimateMs = 10 * 60 * 1000;
 const fohQuotes = [
-  { text: 'Today is never too late to be brand new.', source: 'Innocent' },
-  { text: 'Step into the day and let it go.', source: 'Daylight' },
-  { text: 'Hold on to the memories, they will hold on to you.', source: "New Year's Day" },
-  { text: 'Make the friendship bracelets, take the moment and taste it.', source: "You're On Your Own, Kid" },
-  { text: 'Best believe I\'m still bejeweled, when I walk in the room, I can still make the whole place shimmer.', source: 'Bejeweled' },
-  { text: 'The scary news is, you\'re on your own now. But the cool news is, you\'re on your own now.', source: '2022 NYU Commencement Address' }
+  { text: "It's me, hi.", source: '"Anti-Hero," Midnights' },
+  { text: 'The best people in life are free.', source: '"New Romantics," 1989' },
+  { text: "And if you never bleed, you're never gonna grow.", source: 'from "the 1," Folklore' },
+  { text: 'Everything you lose is a step you take.', source: "from \"You're On Your Own, Kid,\" Midnights" },
+  { text: 'Looking backwards might be the only way to move forward.', source: 'from "The Manuscript," The Tortured Poets Department' },
+  { text: 'Step into the daylight, and let it go.', source: 'from "Daylight," Lover' },
+  { text: 'Every time you smile, I smile.', source: '"Jump Then Fall," Fearless' },
+  { text: 'Hold on to the memories, they will hold on to you.', source: '"New Year\'s Day," Reputation' },
+  { text: 'This is the golden age of something good and right and real.', source: '"State of Grace," Red' },
+  { text: "I'll be strong, I'll be wrong, but life goes on.", source: '"A Place in This World," Taylor Swift' },
+  { text: "Best believe I'm still bejeweled when I walk in the room. I can still make the whole place shimmer.", source: '"Bejeweled," Midnights' }
 ];
 const fohQuoteRotationMs = 20 * 60 * 1000;
+let fohQuoteIndex = Math.floor(Date.now() / fohQuoteRotationMs) % fohQuotes.length;
+let fohQuotePeriod = Math.floor(Date.now() / fohQuoteRotationMs);
 const students = loadLocalData(storageKeys.students, {});
 let shiftLog = loadLocalData(storageKeys.shiftLog, []);
 let selectedJob = '';
@@ -59,9 +66,20 @@ function updateClock() {
 }
 
 function renderFohQuote() {
-  const quote = fohQuotes[Math.floor(Date.now() / fohQuoteRotationMs) % fohQuotes.length];
+  const automaticIndex = Math.floor(Date.now() / fohQuoteRotationMs) % fohQuotes.length;
+  const currentPeriod = Math.floor(Date.now() / fohQuoteRotationMs);
+  if (currentPeriod !== fohQuotePeriod) {
+    fohQuoteIndex = automaticIndex;
+    fohQuotePeriod = currentPeriod;
+  }
+  const quote = fohQuotes[fohQuoteIndex];
   const quoteElement = document.getElementById('fohQuote');
   quoteElement.innerHTML = `${escapeHtml(quote.text)} <span>— ${escapeHtml(quote.source)}</span>`;
+}
+
+function rotateFohQuote() {
+  fohQuoteIndex = (fohQuoteIndex + 1) % fohQuotes.length;
+  renderFohQuote();
 }
 
 function getStudentName() {
