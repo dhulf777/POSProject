@@ -40,7 +40,7 @@ Then visit `http://localhost:8000`.
 
 The app stores data locally in the current browser. Clearing browser site data will remove saved students, shift history, active orders, and completed orders.
 
-End-of-day summaries are also stored by local calendar date. The `End day` control is located at the bottom of the page and requires typing `END DAY` before saving a snapshot. Returning to the site in the same browser shows the saved summary for that date.
+End-of-day summaries are also stored by local calendar date. The `End day` control is located at the bottom of the page. Closing the day saves the snapshot, moves live orders into completed orders, and clears the visible work log and live queue. Returning to the site in the same browser shows the saved summary for that date.
 
 ## Team Areas
 
