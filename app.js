@@ -377,26 +377,27 @@ function endDay() {
 
 function renderDailySummary() {
   const container = document.getElementById('dailySummary');
-  const dateKey = getDateKey();
-  const summary = dailySummaries[dateKey];
-  if (!summary) {
+  const summaries = Object.values(dailySummaries).sort((first, second) => second.date.localeCompare(first.date));
+  if (!summaries.length) {
     container.innerHTML = '<p class="empty-note">No end-of-day summary saved for today.</p>';
     return;
   }
-  const teamRows = summary.team.length
-    ? summary.team.map(person => `<div class="summary-row"><span>${escapeHtml(person.name)} <small>${escapeHtml(person.job)}</small></span><strong>${formatDuration(person.minutes)}</strong></div>`).join('')
-    : '<p class="empty-note">No clock-in data recorded.</p>';
-  container.innerHTML = `<div class="summary-date">${escapeHtml(formatDateKey(summary.date))}</div>
-    <div class="summary-grid">
-      <div><strong>${summary.orders.total}</strong><span>total orders</span></div>
-      <div><strong>${summary.orders.coffeeTea}</strong><span>coffee & tea</span></div>
-      <div><strong>${summary.orders.soda}</strong><span>soda orders</span></div>
-      <div><strong>${summary.orders.snacks}</strong><span>snacks</span></div>
-      <div><strong>${summary.orders.uniqueCustomers}</strong><span>customers</span></div>
-      <div><strong>${escapeHtml(summary.orders.topDrink)}</strong><span>most popular drink</span></div>
-    </div>
-    <div class="summary-averages"><strong>Averages</strong><span>${formatDuration(summary.averages.shiftMinutes)} per person</span><span>${summary.averages.ordersPerPerson} orders per person</span><span>${summary.averages.prepMinutes} min per order</span></div>
-    <div class="summary-team"><strong>Hours by person</strong>${teamRows}</div>`;
+  container.innerHTML = summaries.map(summary => {
+    const teamRows = summary.team.length
+      ? summary.team.map(person => `<div class="summary-row"><span>${escapeHtml(person.name)} <small>${escapeHtml(person.job)}</small></span><strong>${formatDuration(person.minutes)}</strong></div>`).join('')
+      : '<p class="empty-note">No clock-in data recorded.</p>';
+    return `<article class="summary-card"><div class="summary-date">${escapeHtml(formatDateKey(summary.date))}</div>
+      <div class="summary-grid">
+        <div><strong>${summary.orders.total}</strong><span>total orders</span></div>
+        <div><strong>${summary.orders.coffeeTea}</strong><span>coffee & tea</span></div>
+        <div><strong>${summary.orders.soda}</strong><span>soda orders</span></div>
+        <div><strong>${summary.orders.snacks}</strong><span>snacks</span></div>
+        <div><strong>${summary.orders.uniqueCustomers}</strong><span>customers</span></div>
+        <div><strong>${escapeHtml(summary.orders.topDrink)}</strong><span>most popular drink</span></div>
+      </div>
+      <div class="summary-averages"><strong>Averages</strong><span>${formatDuration(summary.averages.shiftMinutes)} per person</span><span>${summary.averages.ordersPerPerson} orders per person</span><span>${summary.averages.prepMinutes} min per order</span></div>
+      <div class="summary-team"><strong>Hours by person</strong>${teamRows}</div></article>`;
+  }).join('');
 }
 
 function advanceStage(orderId) {
